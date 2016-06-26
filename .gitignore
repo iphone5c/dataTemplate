@@ -46,14 +46,3 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-#.idea/
-funi*.ipr
-funi*.iws
-out/
-funi*/target/
-funi*/funi*.iml
-funi*/funi*/*.iml
-funi*/*.ipr
-funi*/*.iws
-funi-*/funi-*.ipr
-funi-*/funi-*.iws
