@@ -1,3 +1,4 @@
+import data.core.ApplicationContext;
 import data.core.Table;
 import data.core.XmlDatasFactory;
 import data.utils.Factory;
@@ -9,8 +10,8 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        //初始化数据库连接参数
-        Params.initParam();
+        //初始化应用上下文
+        ApplicationContext applicationContext=new ApplicationContext();
         //解析xml模版
         List<Table> tableList= XmlDatasFactory.getAllTableList("templateConfig.xml");
         //todo 根据模版生成数据
