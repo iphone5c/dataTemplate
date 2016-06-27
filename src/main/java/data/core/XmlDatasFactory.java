@@ -17,6 +17,12 @@ import java.util.List;
  */
 public class XmlDatasFactory {
 
+    /**
+     * 解析XML模板获取所有表结构
+     * @param filePath
+     * @return
+     * @throws Exception
+     */
     public static List<Table> getAllTableList(String filePath) throws Exception {
         List<Table> tableList=new ArrayList<Table>();
         if (DataUtils.isEmptyOrNull(filePath))
