@@ -1,6 +1,7 @@
 package data.core;
 
 import data.utils.DataUtils;
+import javafx.scene.control.Tab;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +42,7 @@ public class XmlDatasFactory {
         NodeList tableNodeList=tablesEL.getChildNodes();
         for (int i=0;i<tableNodeList.getLength();i++){
             Node tableNode=tableNodeList.item(i);
-            Table table=XmlDatasFactory.getTable(tableNode);
+            Table table=XmlDatasFactory.getTable(tableNode,null);
             if (table==null)
                 continue;
             tableList.add(table);
@@ -52,9 +53,10 @@ public class XmlDatasFactory {
     /**
      * 获取表结构
      * @param tableNode
+     * @param parentTalbe
      * @return
      */
-    private static Table getTable(Node tableNode){
+    private static Table getTable(Node tableNode,Table parentTalbe){
         Table table=null;
         if (tableNode instanceof Element){
             table=new Table();
@@ -67,6 +69,7 @@ public class XmlDatasFactory {
             table.setCatalog(tableEL.getAttribute("catalog"));
             table.setTextFile(tableEL.getAttribute("textfile"));
             table.setProportion(tableEL.getAttribute("proportion"));
+            table.setParent(parentTalbe);
             table.setChildTalbes(new ArrayList<Table>());
             table.setColumns(XmlDatasFactory.getColumnList(tableEL.getChildNodes(), table));
         }
@@ -76,6 +79,7 @@ public class XmlDatasFactory {
     /**
      * 获取表结构所有字段
      * @param columnNodeList
+     * @param parentTalbe
      * @return
      */
     private static List<Column> getColumnList(NodeList columnNodeList,Table parentTalbe){
@@ -92,13 +96,42 @@ public class XmlDatasFactory {
                     column.setContent(columnEL.getAttribute("content"));
                     column.setMin(columnEL.getAttribute("min"));
                     column.setMax(columnEL.getAttribute("max"));
+                    column.setTable(parentTalbe);
                 }else if (columnEL.getTagName().equals("table")){
-                    parentTalbe.getChildTalbes().add(XmlDatasFactory.getTable(columnNode));
+                    parentTalbe.getChildTalbes().add(XmlDatasFactory.getTable(columnNode,parentTalbe));
                 }else
                     throw new IllegalArgumentException("当前节点不是table或者colunm节点");
                 columnList.add(column);
             }
         }
         return columnList;
+    }
+
+    /**
+     *获取顶层表
+     * @param column
+     */
+    public static Table getRootTableByColumn(Column column){
+        if (column==null)
+            throw new IllegalArgumentException("column不能为空或null");
+        Table table=column.getTable();
+        if (table==null)
+            throw new IllegalArgumentException("此字段没有找到对应的表信息");
+        return XmlDatasFactory.getRootTableByTable(table);
+
+    }
+
+    /**
+     * 获取顶层表
+     * @param table
+     * @return
+     */
+    public static Table getRootTableByTable(Table table){
+        if (table==null)
+            throw new IllegalArgumentException("table不能为空或null");
+        if (table.getParent()==null)
+            return table;
+        else
+            return XmlDatasFactory.getRootTableByTable(table.getParent());
     }
 }

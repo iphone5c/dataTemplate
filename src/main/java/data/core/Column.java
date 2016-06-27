@@ -44,6 +44,11 @@ public class Column implements Serializable {
      */
     private String max;
 
+    /**
+     * 所属表
+     */
+    private Table table;
+
     @Override
     public String toString() {
         return "Column{" +
@@ -102,5 +107,13 @@ public class Column implements Serializable {
 
     public void setMax(String max) {
         this.max = max;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
     }
 }

@@ -1,6 +1,10 @@
 package data.utils;
 
 
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by Administrator on 2016/3/1.
  */
@@ -34,6 +38,27 @@ public class DataUtils {
             return ColumnType.TEXT;
         }else
             throw new IllegalArgumentException("没有此"+key+"字段类型");
+    }
+
+    /**
+     * 生成一个指定范围的随机数
+     * @param min
+     * @param max
+     * @return
+     */
+    public static int getRanDom(int min,int max){
+        Random random=new Random();
+        return random.nextInt(max-min+1)+min;
+    }
+
+    public String getString(){
+        String info="[N_JBFY][N_AJXH]{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
+        Pattern p=Pattern.compile("\\{([a-z,A-Z,_,0-9,#,:,\\,]+)\\}");
+        Matcher m=p.matcher(info);
+        while (m.find()){
+            System.out.println(m.group());
+        }
+        return info;
     }
 
 //    public static Date dateAddMinute(Date date, int minute) {

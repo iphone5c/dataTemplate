@@ -51,6 +51,11 @@ public class Table implements Serializable {
      */
     private List<Table> childTalbes;
 
+    /**
+     * 父表
+     */
+    private Table parent;
+
     @Override
     public String toString() {
         return "Table{" +
@@ -127,5 +132,13 @@ public class Table implements Serializable {
 
     public void setChildTalbes(List<Table> childTalbes) {
         this.childTalbes = childTalbes;
+    }
+
+    public Table getParent() {
+        return parent;
+    }
+
+    public void setParent(Table parent) {
+        this.parent = parent;
     }
 }
