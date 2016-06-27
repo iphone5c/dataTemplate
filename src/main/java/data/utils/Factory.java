@@ -9,9 +9,9 @@ import java.sql.SQLException;
 public class Factory {
 
 	public static Connection getConn(String expip,
-			String expport, String expusername, String exppassword,String dataDB) throws SQLException
+			String expport, String expusername, String exppassword,String dataDB,String schema) throws SQLException
 	{
-		    return SybaseConn.createConn(expip, expport, expusername, exppassword,dataDB);
+		    return SybaseConn.createConn(expip, expport, expusername, exppassword,dataDB,schema);
 	}
 
 }

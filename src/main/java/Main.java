@@ -1,6 +1,7 @@
 import data.core.ApplicationContext;
 import data.core.Table;
 import data.core.XmlDatasFactory;
+import data.test.TestSql;
 import data.utils.Factory;
 import data.utils.Params;
 
@@ -17,8 +18,9 @@ public class Main {
         //todo 根据模版生成数据
 
         //获取数据库连接
-        Connection connection = Factory.getConn(Params.DATA_SOURCE_IP, Params.DATA_SOURCE_PORT, Params.DATA_SOURCE_USER, Params.DATA_SOURCE_PASSWORD, Params.DATA_SOURCE_DB);
+        Connection connection = Factory.getConn(Params.DATA_SOURCE_IP, Params.DATA_SOURCE_PORT, Params.DATA_SOURCE_USER, Params.DATA_SOURCE_PASSWORD, Params.DATA_SOURCE_DB,Params.DATA_SOURCE_SCHEMA);
         //todo 插入数据
+        TestSql.insertData(connection);
         System.out.println(tableList);
     }
 }
