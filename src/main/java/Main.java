@@ -8,6 +8,5 @@ public class Main {
     public static void main(String[] args) throws Exception {
         List<Table> tableList= XmlDatasFactory.getAllTableList("E:\\dataTemplate\\src\\main\\resources\\templateConfig.xml");
         System.out.println(tableList);
-        System.out.println("hello world");
     }
 }
