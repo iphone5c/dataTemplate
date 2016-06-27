@@ -51,14 +51,25 @@ public class DataUtils {
         return random.nextInt(max-min+1)+min;
     }
 
-    public String getString(){
-        String info="[N_JBFY][N_AJXH]{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
-        Pattern p=Pattern.compile("\\{([a-z,A-Z,_,0-9,#,:,\\,]+)\\}");
+    /**
+     * 获取匹配的字符串
+     * @param info
+     * @param regex
+     * @return
+     */
+    public static String[] getString(String info,String regex){
+        StringBuffer sb=new StringBuffer();
+        Pattern p=Pattern.compile(regex);
         Matcher m=p.matcher(info);
         while (m.find()){
-            System.out.println(m.group());
+            sb.append(m.group()).append(",");
         }
-        return info;
+        if (DataUtils.isEmptyOrNull(sb.toString()))
+            return null;
+        else {
+            sb.deleteCharAt(sb.length()-1);
+            return sb.toString().split(",");
+        }
     }
 
 //    public static Date dateAddMinute(Date date, int minute) {

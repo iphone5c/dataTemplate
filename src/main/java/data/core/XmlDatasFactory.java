@@ -134,4 +134,27 @@ public class XmlDatasFactory {
         else
             return XmlDatasFactory.getRootTableByTable(table.getParent());
     }
+
+    /**
+     * 根据名字获取指定表下的字段
+     * @param name
+     * @param table
+     * @return
+     */
+    public static Column getColumnByName(String name,Table table){
+        Column column=null;
+        if(DataUtils.isEmptyOrNull(name))
+            throw new IllegalArgumentException("name不能为空或null");
+        if (table==null)
+            throw new IllegalArgumentException("table不能为空或null");
+        if(table.getColumns()==null)
+            throw new IllegalArgumentException("此表的字段集合不能为空或null");
+        for (Column col:table.getColumns()){
+            if (col.getName().equals(name)){
+                column=col;
+                break;
+            }
+        }
+        return column;
+    }
 }

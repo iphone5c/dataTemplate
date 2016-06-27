@@ -1,6 +1,7 @@
 import data.core.ApplicationContext;
 import data.core.Table;
 import data.core.XmlDatasFactory;
+import data.utils.DataUtils;
 import data.utils.Factory;
 import data.utils.Params;
 
@@ -23,6 +24,10 @@ public class Main {
         //获取数据库连接
 //        Connection connection = Factory.getConn(Params.DATA_SOURCE_IP, Params.DATA_SOURCE_PORT, Params.DATA_SOURCE_USER, Params.DATA_SOURCE_PASSWORD, Params.DATA_SOURCE_DB);
         //todo 插入数据
-
+//        String info="[N_JBFY][N_AJXH]{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
+//        String info="{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
+//        System.out.println(DataUtils.getString(info,"(\\[[^\\]]+\\])"));
+        String info="[N_JBFY]";
+        System.out.println(info.substring(1,info.length()-1));
     }
 }
