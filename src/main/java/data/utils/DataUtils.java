@@ -1,6 +1,11 @@
 package data.utils;
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +17,11 @@ public class DataUtils {
 //    public static String SETTING_PATH="yc-coresystem-services/conf/setting/settings-config.xml";
 //
 //    public static String MODEL_TARGET_PATH="_yc_resources";
+
+    /**
+     * 日期格式：yyyy-MM-dd
+     */
+    public static String DATEFORMAT_DATA_EN_LONG = "yyyy-MM-dd";
 
     public static boolean isEmptyOrNull(String str) {
         return str == null || str.isEmpty();
@@ -52,6 +62,18 @@ public class DataUtils {
     }
 
     /**
+     * 生成一个指定范围的随机时间
+     * @param min
+     * @param max
+     * @return
+     */
+    public static Date getRanDomDate(Date min,Date max){
+        int day=DataUtils.daysBetween(min,max);
+        int random=DataUtils.getRanDom(0,day);
+        return DataUtils.dateAddDay(min,random);
+    }
+
+    /**
      * 获取匹配的字符串
      * @param info
      * @param regex
@@ -69,6 +91,65 @@ public class DataUtils {
         else {
             sb.deleteCharAt(sb.length()-1);
             return sb.toString().split(",");
+        }
+    }
+
+    public static Date dateAddMinute(Date date, int minute) {
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(date);
+        ca.add(12, minute);
+        return ca.getTime();
+    }
+
+    public static Date dateAddDay(Date date, int day) {
+        int minute = day * 24 * 60;
+        return dateAddMinute(date, minute);
+    }
+
+    public static int daysOfTwo(Date begin, Date end) {
+        Calendar aCalendar = Calendar.getInstance();
+        aCalendar.setTime(begin);
+        int day1 = aCalendar.get(6);
+        aCalendar.setTime(end);
+        int day2 = aCalendar.get(6);
+        return day2 - day1;
+    }
+
+    /**
+     * 计算两个日期之间相差的天数
+     * @param smdate 较小的时间
+     * @param bdate  较大的时间
+     * @return 相差天数
+     * @throws ParseException
+     */
+    public static int daysBetween(Date smdate,Date bdate)
+    {
+        SimpleDateFormat sdf=new SimpleDateFormat(DataUtils.DATEFORMAT_DATA_EN_LONG);
+        try {
+            smdate=sdf.parse(sdf.format(smdate));
+            bdate=sdf.parse(sdf.format(bdate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(smdate);
+        long time1 = cal.getTimeInMillis();
+        cal.setTime(bdate);
+        long time2 = cal.getTimeInMillis();
+        long between_days=(time2-time1)/(1000*3600*24);
+
+        return Integer.parseInt(String.valueOf(between_days));
+    }
+
+    public static Date toDate(String text, String format) {
+        if (DataUtils.isEmptyOrNull(text))
+            return null;
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        try {
+            return dateFormat.parse(text);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

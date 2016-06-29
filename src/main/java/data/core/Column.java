@@ -45,6 +45,11 @@ public class Column implements Serializable {
     private String max;
 
     /**
+     * 值
+     */
+    private Object value;
+
+    /**
      * 所属表
      */
     private Table table;
@@ -115,5 +120,13 @@ public class Column implements Serializable {
 
     public void setTable(Table table) {
         this.table = table;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 }
