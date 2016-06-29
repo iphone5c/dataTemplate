@@ -16,10 +16,11 @@ import java.util.Map;
  */
 public class ApplicationContext {
 
+    //一次批量处理条数
+    public static Integer BATCH_DEAL_SIZE = 10000;
     private Map<String,Object> params;
 
     private List<Table> tableList;
-
     public ApplicationContext(){
         //初始化数据库连接参数
         Params.initParam();
