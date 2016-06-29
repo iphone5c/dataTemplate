@@ -20,7 +20,7 @@ public class Main {
         //获取数据库连接
         Connection connection = Factory.getConn(Params.DATA_SOURCE_IP, Params.DATA_SOURCE_PORT, Params.DATA_SOURCE_USER, Params.DATA_SOURCE_PASSWORD, Params.DATA_SOURCE_DB,Params.DATA_SOURCE_SCHEMA);
         //todo 插入数据
-        TestSql.insertData(connection);
+        TestSql.insertData();
         System.out.println(tableList);
     }
 }

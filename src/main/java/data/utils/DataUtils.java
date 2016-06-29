@@ -1,6 +1,10 @@
 package data.utils;
 
 
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by Administrator on 2016/3/1.
  */
@@ -34,6 +38,38 @@ public class DataUtils {
             return ColumnType.TEXT;
         }else
             throw new IllegalArgumentException("没有此"+key+"字段类型");
+    }
+
+    /**
+     * 生成一个指定范围的随机数
+     * @param min
+     * @param max
+     * @return
+     */
+    public static int getRanDom(int min,int max){
+        Random random=new Random();
+        return random.nextInt(max-min+1)+min;
+    }
+
+    /**
+     * 获取匹配的字符串
+     * @param info
+     * @param regex
+     * @return
+     */
+    public static String[] getString(String info,String regex){
+        StringBuffer sb=new StringBuffer();
+        Pattern p=Pattern.compile(regex);
+        Matcher m=p.matcher(info);
+        while (m.find()){
+            sb.append(m.group()).append(",");
+        }
+        if (DataUtils.isEmptyOrNull(sb.toString()))
+            return null;
+        else {
+            sb.deleteCharAt(sb.length()-1);
+            return sb.toString().split(",");
+        }
     }
 
 //    public static Date dateAddMinute(Date date, int minute) {
