@@ -27,7 +27,9 @@ public class Main {
 //        String info="[N_JBFY][N_AJXH]{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
 //        String info="{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
 //        System.out.println(DataUtils.getString(info,"(\\[[^\\]]+\\])"));
-        String info="[N_JBFY]";
-        System.out.println(info.substring(1,info.length()-1));
+//        String info="[N_JBFY]";
+//        System.out.println(info.substring(1,info.length()-1));
+        String info="[N_JBFY][N_AJXH]{#2006:1,2007:8,2008:1#}川刑更{SEQ}号";
+        System.out.println(info.replaceAll("N_AJXH","123"));
     }
 }

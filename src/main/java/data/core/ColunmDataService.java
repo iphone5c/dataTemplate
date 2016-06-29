@@ -39,14 +39,16 @@ public class ColunmDataService {
                     String[] colunmNames=DataUtils.getString(content,"(\\[[^\\]]+\\])");
                     if (colunmNames!=null){
                         for (String name:colunmNames){
-                            this.getColunmData(XmlDatasFactory.getColumnByName(name.substring(1,name.length()-1),column.getTable()),record,applicationContext);
-                            //TODO 字符串替换
+                            String keyName=name.substring(1,name.length()-1);
+                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,applicationContext);
+                            content=content.replaceAll("\\["+keyName+"\\]", (String) record.get(keyName));
                         }
                     }
                     colunmNames=DataUtils.getString(content,"(\\{[^\\}]+\\})");
                     if (colunmNames!=null){
                         for (String name:colunmNames){
                             //TODO 处理SEQ这类型的
+                            String keyName=name.substring(1,name.length()-1);
                         }
                     }
                     break;
