@@ -5,6 +5,7 @@ import data.utils.DataUtils;
 import data.utils.Params;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -217,11 +218,13 @@ public class ColunmDataService {
             if (records.size()>10000)
                 this.saveFiles(table,records);
         }
-        List<Map<String,Object>> temp=results.get(table.getName());
-        if (temp==null)
-            results.put(table.getName(),records);
-        else
-            results.get(table.getName()).addAll(records);
+//        List<Map<String,Object>> temp=results.get(table.getName());
+//        if (temp==null)
+//            results.put(table.getName(), records);
+//        else
+//            results.get(table.getName()).addAll(records);
+
+        this.saveFiles(table, records);
     }
 
     /**
@@ -231,16 +234,19 @@ public class ColunmDataService {
      */
     private void saveFiles(Table table,List<Map<String,Object>> records){
         try {
-            BufferedWriter buffer = new BufferedWriter(new FileWriter("d:/"+table.getName()+".txt"));
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("G:/"+table.getName()+".txt",true));
             for (Map<String,Object> record:records){
                 StringBuilder info=new StringBuilder();
                 for (Map.Entry<String, Object> column : record.entrySet()) {
                     info.append(column.getValue()).append(",");
                 }
-                info.deleteCharAt(info.length()-1);
+                info.deleteCharAt(info.length() - 1);
+                info.append("\r\n");
                 buffer.write(info.toString());
+                buffer.flush();
             }
             records.clear();
+            buffer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
