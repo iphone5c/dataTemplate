@@ -76,7 +76,7 @@ public class XmlDatasFactory {
             table.setChildTalbes(new ArrayList<Table>());
             table.setColumns(XmlDatasFactory.getColumnList(tableEL.getChildNodes(), table));
         }
-        cacheTableStruct(table);
+//        cacheTableStruct(table);
         return table;
     }
 
@@ -114,11 +114,11 @@ public class XmlDatasFactory {
                     column.setMin(columnEL.getAttribute("min"));
                     column.setMax(columnEL.getAttribute("max"));
                     column.setTable(parentTalbe);
+                    columnList.add(column);
                 }else if (columnEL.getTagName().equals("table")){
                     parentTalbe.getChildTalbes().add(XmlDatasFactory.getTable(columnNode,parentTalbe));
                 }else
                     throw new IllegalArgumentException("当前节点不是table或者colunm节点");
-                columnList.add(column);
             }
         }
         return columnList;

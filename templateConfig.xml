@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 加压数据格式定义 -->
 <tables>
-    <table name="T_XS_AJ" num="100000000" schema="" catalog="" textfile="a.txt">
+    <table name="T_XS_AJ" num="1000000" schema="" catalog="" textfile="a.txt">
 	  <!-- 列定义 name：字段名
                	  type:产生数据方式：PK,FK,CODE(单值代码),DATE,NUM,STRING,ORGAN(一条记录中的组织机构必须具有级联性质),TEXT(从文本中随机读取长度的字符串),无 
 	              generator：生成方式：SEQ(序列),RANDOM(允许范围内的随机数字，随机时间,随机人员部门单位),UUID,LABLE:标签表达式(由字符串+多个标签表达式拼接组成),比例分布,用##来表示比例，例如#1001:1,1002:6,1003:1#。
@@ -15,7 +15,7 @@
 				  列内部表示字段中文名，可以不写
          -->
 	  <column name="C_BH"    type="PK"     generator="UUID" >编号</column>                                         
-	  <column name="N_AJXH"  type="NUM"    generator="SEQ"     min="100000000000" >案件序号</column>         
+	  <column name="N_AJXH"  type="NUM"    generator="SEQ"     min="1" >案件序号</column>
 	  <column name="N_AJBS"  type="STRING" generator="LABLE"   content="[N_JBFY][N_AJXH]">案件标识</column>
 	  <column name="N_AJLB"  type="CODE"   generator="#1001:1,1002:6,1003:1#" >案件类别</column>
 	  <column name="N_JBFY"  type="ORGAN"  generator="RANDOM"  content="corp" >经办法院</column>
@@ -28,48 +28,48 @@
 	  <column name="N_LAR"   type="ORGAN"  generator="RANDOM" content="user">立案人</column>
 	  <column name="N_LATS"  type="ORGAN"  generator="RANDOM" content="dept">立案庭室</column>
 	  <column name="D_JARQ"  type="DATE"   generator="RANDOM" min="[D_LARQ]" max="[D_SXRQ]">结案日期</column>
-	  <column name="D_SXRQ"  type="DATE"   generator="RANDOM" min="[D_JARQ]" max="2018-12-12">生效日期</column>
+	  <column name="D_SXRQ"  type="DATE"   generator="RANDOM" min="2016-12-12" max="2018-12-12">生效日期</column>
 	  <column name="C_SSQQ"  type="STRING" generator="TEXT" >诉讼请求</column>
 	  <!-- 子表 proportion表示产生数据的比例，格式如 #1:2,0:8# 表示产生1条子表记录的权重为2，0条子表的权重为8-->
-	  <table name="T_XS_YSQK"  proportion="#1:2,0:8#" schema="" catalog="">
-			<column name="C_BH"    type="PK" generator="UUID" >编号</column>
-			<column name="C_BH_AJ" type="FK" content="[T_XS_AJ.C_BH]">案件编号</column>
-			<column name="N_AJLB"  type="CODE"   generator="#101:1,102:6,103:3#" >案件类别</column>
-			<column name="N_JBFY"  type="ORGAN"  generator="RANDOM" contnt="corp" >经办法院</column>
-			<column name="N_CBSPT" type="ORGAN"  generator="RANDOM" content="dept" >承办审判庭</column>
-			<column name="C_AH"    type="STRING" generator="LABLE"   content="{#2006:1,2007:8,2008:1#}川刑更{SEQ}号" min="1" >案号</column>
-			<column name="N_SPCX"  type="CODE"  generator="#101:1,102:6,103:3#" >审判程序</column>
-			<column name="D_LARQ"  type="DATE"  generator="RANDOM" min="2010-01-01" max="2016-12-12">立案日期</column>
-			<column name="D_JARQ"  type="DATE"  generator="RANDOM" min="[D_LARQ]"   max="2018-12-12">结案日期</column>
-			<column name="N_JAFS"  type="CODE"  generator="#101:1,102:6,103:3#">结案方式</column>
-	  </table>
-	  <!-- 子表 刑事被告人 -->
-	  <table name="T_XS_BGR" proportion="#1:90,2:6,3:3,4:1#" schema="" catalog="">
-			<column name="C_BH"     type="PK" generator="UUID" >编号</column>
-			<column name="C_BH_AJ"  type="FK" content="[T_XS_AJ.C_BH]" >案件编号</column>
-			<column name="C_MC"     type="STRING" generator="TEXT" >姓名/名称</column>
-			<column name="N_XB"     type="CODE"   generator="#101:1,102:6,103:3#">性别</column>
-			<column name="D_CSRQ"   type="DATE"   generator="RANDOM" min="1955-01-01" max="2000-12-12" >出生日期</column>
-			<column name="N_NL"     type="NUM"    generator="RANDOM" min="16" max="30" >犯罪时年龄/刑罚变更案件真实年龄</column>
-			<column name="N_GJ"     type="STRING" generator="LABLE" content="86" >国籍</column>
-			<column name="N_MZ"     type="STRING" generator="LABLE" content="1" >民族</column>
-			<column name="N_SFZJZL" type="STRING" generator="LABLE" content="01" >身份证件种类</column>
-			<column name="C_SFZJHM" type="STRING" generator="LABLE" content="513822{SEQ}" min="197001010000" >身份证件号码</column>
-			<column name="C_DZ"     type="STRING" generator="TEXT" >地址</column>
-			<column name="C_YZBM"   type="NUM"    generator="RANDOM" min="100000"   >邮政编码</column>
-			<column name="C_LXDH"   type="STRING" generator="LABLE" content="1352228{SEQ}" min="1000" >联系电话</column>
-			<column name="C_DZYX"   type="STRING" generator="LABLE" content="{TEXT}@demo.com" >电子邮箱</column>
-		<!-- 被告人子表 刑事被告人指控罪名 -->
-		<table name="T_XS_ZKZM" proportion="#1:90,2:6,3:4#" schema="" catalog="">
-	       <column name="C_BH"     type="PK" generator="UUID" >编号</column>
-		   <column name="C_BH_AJ"  type="FK" content="[T_XS_BGR.C_BH_AJ]" >案件编号</column>
-		   <column name="C_BH_BGR" type="FK" content="[T_XS_BGR.C_BH]">被告人编号</column>
-		   <column name="N_ZM"     type="CODE"   generator="#100001:1,100002:2,100003:7#" >罪名</column>
-		   <column name="C_ZMZS"   type="STRING" generator="TEXT" >罪名注释</column>
-		   <column name="N_ZZM"    type="CODE"   generator="#1:7,0:3#" >是否主罪名</column>
-		   <column name="N_XH"     type="NUM"    generator="SEQ" min="1" >序号</column>	  
-	    </table>
-	  </table>
+        <table name="T_XS_YSQK"  proportion="#1:2,0:8#" schema="" catalog="">
+            <column name="C_BH"    type="PK" generator="UUID" >编号</column>
+            <column name="C_BH_AJ" type="FK" content="[T_XS_AJ.C_BH]">案件编号</column>
+            <column name="N_AJLB"  type="CODE"   generator="#101:1,102:6,103:3#" >案件类别</column>
+            <column name="N_JBFY"  type="ORGAN"  generator="RANDOM" contnt="corp" >经办法院</column>
+            <column name="N_CBSPT" type="ORGAN"  generator="RANDOM" content="dept" >承办审判庭</column>
+            <column name="C_AH"    type="STRING" generator="LABLE"   content="{#2006:1,2007:8,2008:1#}川刑更{SEQ}号" min="1" >案号</column>
+            <column name="N_SPCX"  type="CODE"  generator="#101:1,102:6,103:3#" >审判程序</column>
+            <column name="D_LARQ"  type="DATE"  generator="RANDOM" min="2010-01-01" max="2016-12-12">立案日期</column>
+            <column name="D_JARQ"  type="DATE"  generator="RANDOM" min="[D_LARQ]"   max="2018-12-12">结案日期</column>
+            <column name="N_JAFS"  type="CODE"  generator="#101:1,102:6,103:3#">结案方式</column>
+        </table>
+        <!-- 子表 刑事被告人 -->
+        <table name="T_XS_BGR" proportion="#1:90,2:6,3:3,4:1#" schema="" catalog="">
+            <column name="C_BH"     type="PK" generator="UUID" >编号</column>
+            <column name="C_BH_AJ"  type="FK" content="[T_XS_AJ.C_BH]" >案件编号</column>
+            <column name="C_MC"     type="STRING" generator="TEXT" >姓名/名称</column>
+            <column name="N_XB"     type="CODE"   generator="#101:1,102:6,103:3#">性别</column>
+            <column name="D_CSRQ"   type="DATE"   generator="RANDOM" min="1955-01-01" max="2000-12-12" >出生日期</column>
+            <column name="N_NL"     type="NUM"    generator="RANDOM" min="16" max="30" >犯罪时年龄/刑罚变更案件真实年龄</column>
+            <column name="N_GJ"     type="STRING" generator="LABLE" content="86" >国籍</column>
+            <column name="N_MZ"     type="STRING" generator="LABLE" content="1" >民族</column>
+            <column name="N_SFZJZL" type="STRING" generator="LABLE" content="01" >身份证件种类</column>
+            <column name="C_SFZJHM" type="STRING" generator="LABLE" content="513822{SEQ}" min="100" >身份证件号码</column>
+            <column name="C_DZ"     type="STRING" generator="TEXT" >地址</column>
+            <column name="C_YZBM"   type="NUM"    generator="RANDOM" min="1000"   >邮政编码</column>
+            <column name="C_LXDH"   type="STRING" generator="LABLE" content="1352228{SEQ}" min="1000" >联系电话</column>
+            <column name="C_DZYX"   type="STRING" generator="LABLE" content="{TEXT}@demo.com" >电子邮箱</column>
+            <!-- 被告人子表 刑事被告人指控罪名 -->
+            <table name="T_XS_ZKZM" proportion="#1:90,2:6,3:4#" schema="" catalog="">
+                <column name="C_BH"     type="PK" generator="UUID" >编号</column>
+                <column name="C_BH_AJ"  type="FK" content="[T_XS_BGR.C_BH_AJ]" >案件编号</column>
+                <column name="C_BH_BGR" type="FK" content="[T_XS_BGR.C_BH]">被告人编号</column>
+                <column name="N_ZM"     type="CODE"   generator="#100001:1,100002:2,100003:7#" >罪名</column>
+                <column name="C_ZMZS"   type="STRING" generator="TEXT" >罪名注释</column>
+                <column name="N_ZZM"    type="CODE"   generator="#1:7,0:3#" >是否主罪名</column>
+                <column name="N_XH"     type="NUM"    generator="SEQ" min="1" >序号</column>
+            </table>
+        </table>
 
     </table>
 

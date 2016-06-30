@@ -2,6 +2,7 @@ package data.core;
 
 import data.utils.ColumnType;
 import data.utils.DataUtils;
+import data.utils.Params;
 
 import java.util.*;
 
@@ -15,35 +16,40 @@ public class ColunmDataService {
      * 获取字段值
      * @param column 字段对象
      * @param record 数据记录生成存放
+     * @param fkValue 外键值
+     * @param user user
      * @param applicationContext 应用上下文
      * @return
      */
-    public Map<String,Object> getColunmData(Column column,Map<String,Object> record,Object fkValue,ApplicationContext applicationContext){
+    public Map<String,Object> getColunmData(Column column,Map<String,Object> record,Object fkValue,Map<String,Object> user,ApplicationContext applicationContext){
         if (column==null)
             throw new IllegalArgumentException("column不能为空或null");
         if (DataUtils.isEmptyOrNull(column.getColumnType().name()))
             throw new IllegalArgumentException("字段的产生数据方式不能为空或null");
-        if (DataUtils.isEmptyOrNull(column.getGenerator()))
-            throw new IllegalArgumentException("字段的生成方式不能为空或null");
+//        if (DataUtils.isEmptyOrNull(column.getGenerator()))
+//            throw new IllegalArgumentException("字段的生成方式不能为空或null");
         if (record.get(column.getName())==null){
             switch (column.getGenerator()){
                 case "UUID":
                     record.put(column.getName(),UUID.randomUUID().toString());
+                    break;
                 case "SEQ":
                     StringBuffer key=new StringBuffer(column.getTable().getName()).append(".").append(column.getName());
                     record.put(column.getName(),this.getSEQ(key.toString(),Integer.parseInt(column.getMin()),true,applicationContext));
+                    break;
                 case "LABLE":
                     String content = column.getContent();
                     String[] colunmNames=DataUtils.getString(content,"(\\[[^\\]]+\\])");
                     if (colunmNames!=null){
                         for (String name:colunmNames){
                             String keyName=name.substring(1,name.length()-1);
-                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,applicationContext);
-                            content=content.replaceAll("\\["+keyName+"\\]", (String) record.get(keyName));
+                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,user,applicationContext);
+                            content=content.replaceAll("\\["+keyName+"\\]",record.get(keyName).toString());
                         }
                     }
                     colunmNames=DataUtils.getString(content,"(\\{[^\\}]+\\})");
                     if (colunmNames!=null){
+                        boolean flag=true;
                         for (String name:colunmNames){
                             String keyName=name.substring(1,name.length()-1);
                             switch (keyName){
@@ -51,7 +57,8 @@ public class ColunmDataService {
                                     content=content.replaceAll("\\{"+keyName+"\\}",UUID.randomUUID().toString());
                                     break;
                                 case "SEQ":
-                                    content=content.replaceAll("\\{"+keyName+"\\}",this.getSEQ(keyName,Integer.parseInt(column.getMin()),false,applicationContext).toString());
+                                    content=content.replaceAll("\\{"+keyName+"\\}",this.getSEQ(column.getTable().getName()+"."+column.getName()+"."+keyName,Integer.parseInt(column.getMin()),flag,applicationContext).toString());
+                                    flag=false;
                                     break;
                                 case "TEXT":
                                     String info= (String) applicationContext.getParams().get(XmlDatasFactory.getRootTableByColumn(column).getName());
@@ -74,22 +81,29 @@ public class ColunmDataService {
                             start=DataUtils.toDate(column.getMin(),DataUtils.DATEFORMAT_DATA_EN_LONG);
                         }else {
                             String keyName=startDate[0].substring(1,startDate[0].length()-1);
-                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,applicationContext);
+                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,user,applicationContext);
                             start= (Date) record.get(keyName);
                         }
 
                         if (endDate==null){
-                            end=DataUtils.toDate(column.getMin(),DataUtils.DATEFORMAT_DATA_EN_LONG);
+                            end=DataUtils.toDate(column.getMax(),DataUtils.DATEFORMAT_DATA_EN_LONG);
                         }else {
                             String keyName=endDate[0].substring(1,endDate[0].length()-1);
-                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,applicationContext);
+                            this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,user,applicationContext);
                             end= (Date) record.get(keyName);
                         }
                         record.put(column.getName(),DataUtils.getRanDomDate(start,end));
                     }else if(column.getColumnType()==ColumnType.NUM){
-                        record.put(column.getName(),DataUtils.getRanDom(Integer.parseInt(column.getMin()),Integer.parseInt(column.getMax())));
+                        record.put(column.getName(),DataUtils.getRanDom(Integer.parseInt(column.getMin()),DataUtils.isEmptyOrNull(column.getMax())?Integer.MAX_VALUE:Integer.parseInt(column.getMax())));
                     }else if(column.getColumnType()==ColumnType.ORGAN){
                         //TODO 获取级联表数据
+                        if (column.getContent().equals("user")){
+                            record.put(column.getName(),user.get("c_id"));
+                        }else if (column.getContent().equals("dept")){
+                            record.put(column.getName(),user.get("c_dept"));
+                        }else if (column.getContent().equals("corp")){
+                            record.put(column.getName(),user.get("c_corp"));
+                        }
                     }
                     break;
                 case "TEXT":
@@ -102,8 +116,7 @@ public class ColunmDataService {
                             record.put(column.getName(),fkValue);
                         }
                     }else {
-                        String temp=column.getGenerator().substring(1,column.getGenerator().length()-1);
-                        record.put(column.getName(),this.getQZ(temp,column.getTable().getName()+"."+column.getName()+"."+column.getGenerator(),applicationContext));
+                        record.put(column.getName(),this.getQZ(column.getGenerator(),column.getTable().getName()+"."+column.getName()+"."+column.getGenerator(),applicationContext));
                     }
             }
         }
@@ -126,9 +139,13 @@ public class ColunmDataService {
             return min;
         }else {
             Integer data= (Integer) obj;
-            if(isAuto)
+            if(isAuto){
                 applicationContext.getParams().put(key,data+1);
-            return data;
+                return data;
+            }else {
+                return data-1;
+            }
+
         }
     }
 
@@ -153,10 +170,10 @@ public class ColunmDataService {
             }
             if (datas.size()>0)
                 applicationContext.getParams().put(key,datas);
-            return datas.get(DataUtils.getRanDom(0,datas.size()));
+            return datas.get(DataUtils.getRanDom(0,datas.size()-1));
         }else {
             List<String> list= (List<String>) obj;
-            return list.get(DataUtils.getRanDom(0,list.size()));
+            return list.get(DataUtils.getRanDom(0,list.size()-1));
         }
     }
 
@@ -166,14 +183,14 @@ public class ColunmDataService {
      * @param applicationContext
      * @return
      */
-    public Map<String,Object> getRecord(List<Column> columnList,Object fkValue,ApplicationContext applicationContext){
+    public Map<String,Object> getRecord(List<Column> columnList,Object fkValue,Map<String,Object> user,ApplicationContext applicationContext){
         Map<String,Object> record=new HashMap<>();
         if (columnList==null)
             throw new IllegalArgumentException("字段集合不能为空或null");
         for (Column column:columnList){
-            this.getColunmData(column,record,fkValue,applicationContext);
+            this.getColunmData(column,record,fkValue,user,applicationContext);
             if (column.getColumnType()==ColumnType.PK)
-                record.put(column.getTable()+".pkValue",record.get(column.getName()));
+                record.put(column.getTable().getName()+".pkValue",record.get(column.getName()));
         }
         return record;
     }
@@ -188,10 +205,11 @@ public class ColunmDataService {
     public void getTable(Table table,Integer num,Map<String,List<Map<String,Object>>> results,Object fkValue,ApplicationContext applicationContext){
         List<Map<String,Object>> records=new ArrayList<>();
         for (int i=0;i<num;i++){
-            Map<String,Object> record=this.getRecord(table.getColumns(),fkValue,applicationContext);
+            List<Map<String,Object>> userList=Params.userList;
+            Map<String,Object> record=this.getRecord(table.getColumns(),fkValue,userList.get(DataUtils.getRanDom(0,userList.size()-1)),applicationContext);
             records.add(record);
             for (Table child:table.getChildTalbes()){
-                this.getTable(child,Integer.parseInt(this.getQZ(table.getProportion(),table.getName(),applicationContext)),results,record.get(table.getName()+".pkValue"),applicationContext);
+                this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),results,record.get(table.getName()+".pkValue"),applicationContext);
             }
         }
         List<Map<String,Object>> temp=results.get(table.getName());

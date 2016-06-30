@@ -23,6 +23,11 @@ public class DataUtils {
      */
     public static String DATEFORMAT_DATA_EN_LONG = "yyyy-MM-dd";
 
+    /**
+     * 日期格式：yyyy-MM-dd HH:mm:ss
+     */
+    public static String DATEFORMAT_DATETIME_EN_LONG = "yyyy-MM-dd HH:mm:ss";
+
     public static boolean isEmptyOrNull(String str) {
         return str == null || str.isEmpty();
     }
@@ -84,13 +89,13 @@ public class DataUtils {
         Pattern p=Pattern.compile(regex);
         Matcher m=p.matcher(info);
         while (m.find()){
-            sb.append(m.group()).append(",");
+            sb.append(m.group()).append("!");
         }
         if (DataUtils.isEmptyOrNull(sb.toString()))
             return null;
         else {
             sb.deleteCharAt(sb.length()-1);
-            return sb.toString().split(",");
+            return sb.toString().split("!");
         }
     }
 
@@ -151,6 +156,13 @@ public class DataUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String dateToString(Date value, String format) {
+        if (value == null)
+            return null;
+        DateFormat dataFormat = new SimpleDateFormat(format);
+        return dataFormat.format(value);
     }
 
 //    public static Date dateAddMinute(Date date, int minute) {
