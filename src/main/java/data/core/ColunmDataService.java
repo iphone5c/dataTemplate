@@ -4,6 +4,9 @@ import data.utils.ColumnType;
 import data.utils.DataUtils;
 import data.utils.Params;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -211,12 +214,36 @@ public class ColunmDataService {
             for (Table child:table.getChildTalbes()){
                 this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),results,record.get(table.getName()+".pkValue"),applicationContext);
             }
+            if (records.size()>10000)
+                this.saveFiles(table,records);
         }
         List<Map<String,Object>> temp=results.get(table.getName());
         if (temp==null)
             results.put(table.getName(),records);
         else
             results.get(table.getName()).addAll(records);
+    }
+
+    /**
+     * 输出到文件并清空缓存
+     * @param table
+     * @param records
+     */
+    private void saveFiles(Table table,List<Map<String,Object>> records){
+        try {
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("d:/"+table.getName()+".txt"));
+            for (Map<String,Object> record:records){
+                StringBuilder info=new StringBuilder();
+                for (Map.Entry<String, Object> column : record.entrySet()) {
+                    info.append(column.getValue()).append(",");
+                }
+                info.deleteCharAt(info.length()-1);
+                buffer.write(info.toString());
+            }
+            records.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
