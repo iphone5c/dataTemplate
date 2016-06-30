@@ -1,6 +1,7 @@
 package data.core;
 
 import data.utils.DataUtils;
+import data.utils.Params;
 import javafx.scene.control.Tab;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -11,7 +12,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 魏源 on 2016/6/25.
@@ -73,7 +76,21 @@ public class XmlDatasFactory {
             table.setChildTalbes(new ArrayList<Table>());
             table.setColumns(XmlDatasFactory.getColumnList(tableEL.getChildNodes(), table));
         }
+        cacheTableStruct(table);
         return table;
+    }
+
+    private static void cacheTableStruct(Table table){
+        StringBuffer sb = new StringBuffer();
+        sb.append(table.getName()).append("(");
+        for(Column column : table.getColumns()){
+            sb.append(column.getName()).append(",");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(")");
+        Map<String,Object> map = new HashMap<>();
+        map.put(table.getName(),sb.toString());
+        Params.tableList.add(map);
     }
 
     /**

@@ -3,10 +3,7 @@ package data.utils;
 import data.dbcache.DataCache;
 
 import java.io.FileInputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by gene on 2016/6/27.
@@ -25,6 +22,8 @@ public class Params {
     public static List<Map<String,Object>> userList;
     public static List<Map<String,Object>> cropList;
     public static List<Map<String,Object>> deptList;
+
+    public static List<Map<String,Object>> tableList = new ArrayList<>();
 
     /**
      * 初始化数据库参数
