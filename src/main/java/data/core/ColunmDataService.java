@@ -203,17 +203,16 @@ public class ColunmDataService {
      * 获取表数据
      * @param table
      * @param num
-     * @param results
      * @param applicationContext
      */
-    public void getTable(Table table,Integer num,Map<String,List<Map<String,Object>>> results,Object fkValue,ApplicationContext applicationContext){
+    public void getTable(Table table,Integer num,Object fkValue,ApplicationContext applicationContext){
         List<Map<String,Object>> records=new ArrayList<>();
         for (int i=0;i<num;i++){
             List<Map<String,Object>> userList=Params.userList;
             Map<String,Object> record=this.getRecord(table.getColumns(),fkValue,userList.get(DataUtils.getRanDom(0,userList.size()-1)),applicationContext);
             records.add(record);
             for (Table child:table.getChildTalbes()){
-                this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),results,record.get(table.getName()+".pkValue"),applicationContext);
+                this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),record.get(table.getName()+".pkValue"),applicationContext);
             }
             if (records.size()>10000)
                 this.saveFiles(table,records);
@@ -234,7 +233,7 @@ public class ColunmDataService {
      */
     private void saveFiles(Table table,List<Map<String,Object>> records){
         try {
-            BufferedWriter buffer = new BufferedWriter(new FileWriter("G:/"+table.getName()+".txt",true));
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".txt",true));
             for (Map<String,Object> record:records){
                 StringBuilder info=new StringBuilder();
                 for (Map.Entry<String, Object> column : record.entrySet()) {
