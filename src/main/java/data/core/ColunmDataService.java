@@ -1,5 +1,6 @@
 package data.core;
 
+import com.sun.deploy.util.StringUtils;
 import data.utils.ColumnType;
 import data.utils.DataUtils;
 import data.utils.Params;
@@ -30,8 +31,6 @@ public class ColunmDataService {
             throw new IllegalArgumentException("column不能为空或null");
         if (DataUtils.isEmptyOrNull(column.getColumnType().name()))
             throw new IllegalArgumentException("字段的产生数据方式不能为空或null");
-//        if (DataUtils.isEmptyOrNull(column.getGenerator()))
-//            throw new IllegalArgumentException("字段的生成方式不能为空或null");
         if (record.get(column.getName())==null){
             switch (column.getGenerator()){
                 case "UUID":
@@ -86,7 +85,7 @@ public class ColunmDataService {
                         }else {
                             String keyName=startDate[0].substring(1,startDate[0].length()-1);
                             this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,user,applicationContext);
-                            start= (Date) record.get(keyName);
+                            start= DataUtils.toDate((String) record.get(keyName),DataUtils.DATEFORMAT_DATA_EN_LONG);
                         }
 
                         if (endDate==null){
@@ -94,9 +93,9 @@ public class ColunmDataService {
                         }else {
                             String keyName=endDate[0].substring(1,endDate[0].length()-1);
                             this.getColunmData(XmlDatasFactory.getColumnByName(keyName,column.getTable()),record,null,user,applicationContext);
-                            end= (Date) record.get(keyName);
+                            end= DataUtils.toDate((String) record.get(keyName),DataUtils.DATEFORMAT_DATA_EN_LONG);
                         }
-                        record.put(column.getName(),DataUtils.getRanDomDate(start,end));
+                        record.put(column.getName(),DataUtils.dateToString(DataUtils.getRanDomDate(start,end),DataUtils.DATEFORMAT_DATA_EN_LONG));
                     }else if(column.getColumnType()==ColumnType.NUM){
                         record.put(column.getName(),DataUtils.getRanDom(Integer.parseInt(column.getMin()),DataUtils.isEmptyOrNull(column.getMax())?Integer.MAX_VALUE:Integer.parseInt(column.getMax())));
                     }else if(column.getColumnType()==ColumnType.ORGAN){
@@ -136,20 +135,22 @@ public class ColunmDataService {
      * @return
      */
     private Integer getSEQ(String key,Integer min,boolean isAuto,ApplicationContext applicationContext){
-        Map<String,Object> map=applicationContext.getParams();
-        Object obj=map.get(key);
-        if (obj==null){
-            applicationContext.getParams().put(key,min+1);
-            return min;
-        }else {
-            Integer data= (Integer) obj;
-            if(isAuto){
-                applicationContext.getParams().put(key,data+1);
-                return data;
+        synchronized (this){
+            Map<String,Object> map=applicationContext.getParams();
+            Object obj=map.get(key);
+            if (obj==null){
+                applicationContext.getParams().put(key,min+1);
+                return min;
             }else {
-                return data-1;
-            }
+                Integer data= (Integer) obj;
+                if(isAuto){
+                    applicationContext.getParams().put(key,data+1);
+                    return data;
+                }else {
+                    return data-1;
+                }
 
+            }
         }
     }
 
@@ -161,23 +162,25 @@ public class ColunmDataService {
      * @return
      */
     private String getQZ(String content,String key,ApplicationContext applicationContext){
-        Map<String,Object> map=applicationContext.getParams();
-        Object obj=map.get(key);
-        if (obj==null){
-            String qzInfo=content.substring(1,content.length()-1);
-            List<String> datas=new ArrayList<>();
-            for (String a1:qzInfo.split(",")){
-                String[] a2=a1.split(":");
-                for (int i=0;i<Integer.parseInt(a2[1]);i++){
-                    datas.add(a2[0]);
+        synchronized (this){
+            Map<String,Object> map=applicationContext.getParams();
+            Object obj=map.get(key);
+            if (obj==null){
+                String qzInfo=content.substring(1,content.length()-1);
+                List<String> datas=new ArrayList<>();
+                for (String a1:qzInfo.split(",")){
+                    String[] a2=a1.split(":");
+                    for (int i=0;i<Integer.parseInt(a2[1]);i++){
+                        datas.add(a2[0]);
+                    }
                 }
+                if (datas.size()>0)
+                    applicationContext.getParams().put(key,datas);
+                return datas.get(DataUtils.getRanDom(0,datas.size()-1));
+            }else {
+                List<String> list= (List<String>) obj;
+                return list.get(DataUtils.getRanDom(0,list.size()-1));
             }
-            if (datas.size()>0)
-                applicationContext.getParams().put(key,datas);
-            return datas.get(DataUtils.getRanDom(0,datas.size()-1));
-        }else {
-            List<String> list= (List<String>) obj;
-            return list.get(DataUtils.getRanDom(0,list.size()-1));
         }
     }
 
@@ -206,16 +209,28 @@ public class ColunmDataService {
      * @param applicationContext
      */
     public void getTable(Table table,Integer num,Object fkValue,ApplicationContext applicationContext){
+
         List<Map<String,Object>> records=new ArrayList<>();
+        long count=0;
         for (int i=0;i<num;i++){
+            long startTime = System.currentTimeMillis();
             List<Map<String,Object>> userList=Params.userList;
             Map<String,Object> record=this.getRecord(table.getColumns(),fkValue,userList.get(DataUtils.getRanDom(0,userList.size()-1)),applicationContext);
             records.add(record);
             for (Table child:table.getChildTalbes()){
                 this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),record.get(table.getName()+".pkValue"),applicationContext);
             }
-            if (records.size()>10000)
+            if (fkValue==null){
+                long endTime = System.currentTimeMillis();
+                long time=(endTime-startTime);
+                count+=time;
+                if (time>20)
+                    System.out.println(record);
+                System.out.println("获取每行记录花费的时间："+time);
+            }
+            if (records.size()>10000) {
                 this.saveFiles(table,records);
+            }
         }
 //        List<Map<String,Object>> temp=results.get(table.getName());
 //        if (temp==null)
@@ -224,6 +239,9 @@ public class ColunmDataService {
 //            results.get(table.getName()).addAll(records);
 
         this.saveFiles(table, records);
+        if (fkValue==null){
+            System.out.println("获取每行记录花费的时间："+count);
+        }
     }
 
     /**
@@ -232,6 +250,7 @@ public class ColunmDataService {
      * @param records
      */
     private void saveFiles(Table table,List<Map<String,Object>> records){
+
         try {
             BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".txt",true));
             for (Map<String,Object> record:records){
@@ -249,6 +268,7 @@ public class ColunmDataService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 }

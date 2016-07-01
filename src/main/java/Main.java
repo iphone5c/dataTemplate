@@ -5,12 +5,15 @@ import data.core.XmlDatasFactory;
 import data.utils.DataUtils;
 import data.utils.Factory;
 import data.utils.Params;
+import javafx.scene.control.Tab;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,14 +23,25 @@ public class Main {
         //初始化应用上下文
         ApplicationContext applicationContext=new ApplicationContext();
 
-        Map<String,List<Map<String,Object>>> results = new HashMap<>();
         ColunmDataService colunmDataService=new ColunmDataService();
         long startTime = System.currentTimeMillis();
-        System.out.println("数据组装开始，请稍后。。。");
-        for (Table table:applicationContext.getTableList()){
-            colunmDataService.getTable(table,table.getNum(),results,null,applicationContext);
-        }
         long endTime = System.currentTimeMillis();
+        System.out.println("数据组装开始，请稍后。。。");
+        ExecutorService exe = Executors.newFixedThreadPool(50);
+        for (Table table:applicationContext.getTableList()){
+//            colunmDataService.getTable(table,table.getNum(),null,applicationContext);
+            int num=table.getNum()/10;
+            for (int i = 1; i <= 10; i++) {
+                exe.execute(new MyThread(num,table,applicationContext,colunmDataService));
+            }
+            exe.shutdown();
+            while (true) {
+                if (exe.isTerminated()) {
+                    endTime = System.currentTimeMillis();
+                    break;
+                }
+            }
+        }
         System.out.println("数据组装结束，耗费时间为："+(endTime-startTime)/1000+"秒");
         //todo 根据模版生成数据
 //        System.out.println(results);
@@ -51,5 +65,32 @@ public class Main {
 //            }
 //        }
 //        System.out.println(datas.get(DataUtils.getRanDom(0,datas.size())));
+//        MyThread myThread=new MyThread();
+//        new Thread(myThread).start();
+//        new Thread(myThread).start();
+//        new Thread(myThread).start();
+//        new Thread(myThread).start();
+    }
+}
+
+class MyThread extends Thread {
+    private Table table;
+    private ApplicationContext applicationContext;
+    private ColunmDataService colunmDataService;
+    private int num;
+
+    MyThread() {
+    }
+
+    MyThread(int num,Table table, ApplicationContext applicationContext,ColunmDataService colunmDataService) {
+        this.num = num;
+        this.table = table;
+        this.applicationContext = applicationContext;
+        this.colunmDataService = colunmDataService;
+    }
+
+    @Override
+    public void run() {
+        colunmDataService.getTable(table,num,null,applicationContext);
     }
 }
