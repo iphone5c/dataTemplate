@@ -211,22 +211,12 @@ public class ColunmDataService {
     public void getTable(Table table,Integer num,Object fkValue,ApplicationContext applicationContext){
 
         List<Map<String,Object>> records=new ArrayList<>();
-        long count=0;
         for (int i=0;i<num;i++){
-            long startTime = System.currentTimeMillis();
             List<Map<String,Object>> userList=Params.userList;
             Map<String,Object> record=this.getRecord(table.getColumns(),fkValue,userList.get(DataUtils.getRanDom(0,userList.size()-1)),applicationContext);
             records.add(record);
             for (Table child:table.getChildTalbes()){
                 this.getTable(child,Integer.parseInt(this.getQZ(child.getProportion(),child.getName(),applicationContext)),record.get(table.getName()+".pkValue"),applicationContext);
-            }
-            if (fkValue==null){
-                long endTime = System.currentTimeMillis();
-                long time=(endTime-startTime);
-                count+=time;
-                if (time>20)
-                    System.out.println(record);
-                System.out.println("获取每行记录花费的时间："+time);
             }
             if (records.size()>10000) {
                 this.saveFiles(table,records);
@@ -239,9 +229,6 @@ public class ColunmDataService {
 //            results.get(table.getName()).addAll(records);
 
         this.saveFiles(table, records);
-        if (fkValue==null){
-            System.out.println("获取每行记录花费的时间："+count);
-        }
     }
 
     /**
@@ -250,7 +237,8 @@ public class ColunmDataService {
      * @param records
      */
     private void saveFiles(Table table,List<Map<String,Object>> records){
-
+        long startTime = System.currentTimeMillis();
+        int size=records.size();
         try {
             BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".txt",true));
             for (Map<String,Object> record:records){
@@ -267,6 +255,11 @@ public class ColunmDataService {
             buffer.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (table.getName().equals("T_XS_AJ")){
+            long endTime = System.currentTimeMillis();
+            long time=(endTime-startTime);
+            System.out.println("本次记录总数："+size+"，获取每行记录花费的时间："+time);
         }
 
     }

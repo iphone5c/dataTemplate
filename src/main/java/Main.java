@@ -30,8 +30,8 @@ public class Main {
         ExecutorService exe = Executors.newFixedThreadPool(50);
         for (Table table:applicationContext.getTableList()){
 //            colunmDataService.getTable(table,table.getNum(),null,applicationContext);
-            int num=table.getNum()/10;
-            for (int i = 1; i <= 10; i++) {
+            int num=table.getNum()/1;
+            for (int i = 1; i <= 1; i++) {
                 exe.execute(new MyThread(num,table,applicationContext,colunmDataService));
             }
             exe.shutdown();
