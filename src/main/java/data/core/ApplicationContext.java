@@ -21,11 +21,15 @@ public class ApplicationContext {
     private Map<String,Object> params;
 
     private List<Table> tableList;
+
+    private ColunmDataService colunmDataService;
+
     public ApplicationContext(){
         //初始化数据库连接参数
         Params.initParam();
         //初始化全局参数
         params=new HashMap<String, Object>();
+        colunmDataService=new ColunmDataService();
         //初始化解析XML
         try {
             tableList=XmlDatasFactory.getAllTableList("templateConfig.xml");
@@ -58,5 +62,13 @@ public class ApplicationContext {
 
     public void setTableList(List<Table> tableList) {
         this.tableList = tableList;
+    }
+
+    public ColunmDataService getColunmDataService() {
+        return colunmDataService;
+    }
+
+    public void setColunmDataService(ColunmDataService colunmDataService) {
+        this.colunmDataService = colunmDataService;
     }
 }

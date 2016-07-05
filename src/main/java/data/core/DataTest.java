@@ -1,32 +1,57 @@
 package data.core;
 
-import com.sun.deploy.util.StringUtils;
-import data.Thread.StartMain;
 import data.utils.ColumnType;
 import data.utils.DataUtils;
 import data.utils.Params;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
 /**
- * 字段数据业务
- * Created by wy on 2016/6/27.
+ * Created by wy on 2016/7/5.
  */
-public class ColunmDataService {
+public class DataTest {
 
+    public void getTableList(List<Table> tableList,ApplicationContext applicationContext){
+        for (Table table:tableList){
+            this.getTableData(table, table.getNum(),null, applicationContext);
+        }
+    }
 
-    /**
-     * 获取字段值
-     * @param column 字段
-     * @param record 记录保存位置
-     * @param user 关联表
-     * @param parentRecord 上个表的记录
-     * @param applicationContext 应用上下文
-     */
+    public void getTableData(Table table,Integer recordNum,Map<String,Object> parentRecord,ApplicationContext applicationContext){
+        List<Map<String,Object>> records=new ArrayList<>();
+        List<Map<String,Object>> userList= Params.userList;
+        int size=0;
+        for (int i=0;i<recordNum;i++){
+            Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
+            records.add(record);
+            for (Table child:table.getChildTalbes()){
+                this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext);
+            }
+            size++;
+            if (records.size()>10000) {
+                records.clear();
+//                this.saveFiles(table,records);
+            }
+        }
+//        this.saveFiles(table, records);
+        if (table.getName().equals("T_XS_AJ")){
+            applicationContext.getParams().put("records",size);
+        }
+    }
+
+    public Map<String,Object> getRecord(List<Column> columns,Map<String,Object> user,Map<String,Object> parentRecord,ApplicationContext applicationContext){
+        Map<String,Object> record=new HashMap<>();
+        for (Column column:columns){
+            this.getColumn(column, record, user,parentRecord, applicationContext);
+            if (column.getColumnType()==ColumnType.PK)
+                record.put("["+column.getTable().getName()+"."+column.getName()+"]",record.get(column.getName()));
+        }
+        return record;
+    }
+
     public void getColumn(Column column,Map<String,Object> record,Map<String,Object> user,Map<String,Object> parentRecord,ApplicationContext applicationContext){
         if (record.get(column.getName())==null){
             switch (column.getGenerator()){
@@ -122,53 +147,6 @@ public class ColunmDataService {
     }
 
 
-    /**
-     *获取一条记录
-     * @param columns
-     * @param user
-     * @param parentRecord
-     * @param applicationContext
-     * @return
-     */
-    public Map<String,Object> getRecord(List<Column> columns,Map<String,Object> user,Map<String,Object> parentRecord,ApplicationContext applicationContext){
-        Map<String,Object> record=new HashMap<>();
-        for (Column column:columns){
-            this.getColumn(column, record, user,parentRecord, applicationContext);
-            if (column.getColumnType()==ColumnType.PK)
-                record.put("["+column.getTable().getName()+"."+column.getName()+"]",record.get(column.getName()));
-        }
-        return record;
-    }
-
-    /**
-     * 获取表数据
-     * @param table
-     * @param recordNum
-     * @param parentRecord
-     * @param applicationContext
-     */
-    public void getTableData(Table table,Integer recordNum,Map<String,Object> parentRecord,ApplicationContext applicationContext){
-        List<Map<String,Object>> records=new ArrayList<>();
-        List<Map<String,Object>> userList= Params.userList;
-        for (int i=0;i<recordNum;i++){
-            Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
-            records.add(record);
-            for (Table child:table.getChildTalbes()){
-                this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext);
-            }
-            if (records.size()>10000) {
-                StartMain.fileIO(table,records);
-//                this.saveFiles(table,records);
-            }
-        }
-//        this.saveFiles(table, records);
-        StartMain.fileIO(table,records);
-    }
-
-    /**
-     * 获取UUID
-     * @return
-     */
     private static String getUUID(){
         return UUID.randomUUID().toString();
     }
@@ -231,4 +209,28 @@ public class ColunmDataService {
         }
     }
 
+    /**
+     * 输出到文件并清空缓存
+     * @param table
+     * @param records
+     */
+    private void saveFiles(Table table,List<Map<String,Object>> records){
+        try {
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".txt",true));
+            for (Map<String,Object> record:records){
+                StringBuilder info=new StringBuilder();
+                for (Map.Entry<String, Object> column : record.entrySet()) {
+                    info.append(column.getValue()).append(",");
+                }
+                info.deleteCharAt(info.length() - 1);
+                info.append("\r\n");
+                buffer.write(info.toString());
+                buffer.flush();
+            }
+            records.clear();
+            buffer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
