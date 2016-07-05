@@ -14,19 +14,10 @@ import java.util.concurrent.Callable;
 
 public class FileMultCalc implements Callable<String> {
 
-    private List<Map<String,Object>> list;
     private int thread;
-    private static int batchSize = 1000;
+//    private static int batchSize = 1000;
     private String tableStruct;
-
-    public List<Map<String, Object>> getList() {
-        return list;
-    }
-
-    public void setList(List<Map<String, Object>> list) {
-        this.list = list;
-    }
-
+    private String fileName;
     public int getThread() {
         return thread;
     }
@@ -41,6 +32,14 @@ public class FileMultCalc implements Callable<String> {
 
     public void setTableStruct(String tableStruct) {
         this.tableStruct = tableStruct;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     private String getMapString(Map<String,Object> map){
@@ -59,9 +58,9 @@ public class FileMultCalc implements Callable<String> {
     @Override
     public String call(){
         try{
-            String fileName = "E:/test/"+"a"+thread+".txt";
+//            String fileName = "E:/test/"+"a"+thread+".txt";
             //写入文件地址
-            FileWriter writer = new FileWriter(fileName);
+        /*    FileWriter writer = new FileWriter(fileName);
             BufferedWriter buffer = new BufferedWriter(writer);
             StringBuilder sb = new StringBuilder();
             int count = 0;
@@ -74,7 +73,7 @@ public class FileMultCalc implements Callable<String> {
             }
             buffer.write(sb.toString());
             buffer.flush();
-            buffer.close();
+            buffer.close();*/
 
             String batPath="bat"+thread+".bat";
             //创建bat文件

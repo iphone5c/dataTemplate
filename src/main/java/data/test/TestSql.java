@@ -3,6 +3,7 @@ package data.test;
 import data.utils.Factory;
 import data.utils.Params;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -23,7 +24,7 @@ public class TestSql {
         System.out.println("开始----" + new Date());
         List<Map<String,Object>> list = getDataList();
 //        batchDeal(list);
-        fileBatchDeal(list);
+        fileBatchDeal("resource");
         System.out.println("结束--------" + new Date());
     }
 
@@ -57,18 +58,17 @@ public class TestSql {
         service.shutdown();
     }
 
-    public static void fileBatchDeal(List<Map<String,Object>> list){
+    public static void fileBatchDeal(String filePath){
         System.out.println("文件批量操作开始----" + new Date());
+        List<File> fileList = getFiles(filePath);
         ExecutorService service = Executors.newFixedThreadPool(10);
         ExecutorCompletionService<String> completion = new ExecutorCompletionService<String>(service);
 
-        for (int i = 0; i < dataSize/threadSize; i++) {
+        for (int i = 0; i < fileList.size(); i++) {
             try{
-                List<Map<String,Object>> batchList = new ArrayList<>();
-                batchList = list.subList(i*threadSize,(i+1)*threadSize);
                 FileMultCalc t = new FileMultCalc();
                 t.setTableStruct("t_aty_cfgid(c_key,n_value)");
-                t.setList(batchList);
+                t.setFileName(fileList.get(i).getPath());
                 t.setThread(i+1);
                 completion.submit(t);
             }catch (Exception e) {
@@ -77,7 +77,7 @@ public class TestSql {
         }
 
         //保证这些并发参数执行完毕后，再回到主线程。
-        for (int i = 0; i < dataSize/threadSize; i++) {
+        for (int i = 0; i < threadSize; i++) {
             try {
                 //获得的是CsjsThread.call()方法的返回值
                 Future<String> a = completion.take();
@@ -88,7 +88,12 @@ public class TestSql {
         service.shutdown();
     }
 
-
+    public static List<File> getFiles( String filePath )
+    {
+        File root = new File( filePath );
+        File[] files = root.listFiles();
+       return Arrays.asList(files);
+    }
     public static List<Map<String,Object>> getDataList(){
         List<Map<String,Object>> list = new ArrayList<>();
         for(int i=0; i<dataSize; i++){
