@@ -41,6 +41,7 @@ public class JdbcBatInsert {
                 }
             }
             ps.executeBatch();
+            System.out.println(ps);
             conn.commit();
         }catch (Exception e){
             e.printStackTrace();
