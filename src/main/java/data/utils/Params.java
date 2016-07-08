@@ -4,6 +4,7 @@ import data.dbcache.DataCache;
 
 import java.io.FileInputStream;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by gene on 2016/6/27.
@@ -22,6 +23,7 @@ public class Params {
     public static List<Map<String,Object>> userList;
     public static List<Map<String,Object>> cropList;
     public static List<Map<String,Object>> deptList;
+    public static LinkedBlockingDeque<Map<String,List<Map<String,Object>>>> blockingDeque;
 
     public static List<Map<String,Object>> tableList = new ArrayList<>();
 
@@ -44,6 +46,7 @@ public class Params {
             userList = DataCache.getDataList(queryUserSql);
             cropList = DataCache.getDataList(queryCropSql);
             deptList = DataCache.getDataList(queryDeptSql);
+            blockingDeque=new LinkedBlockingDeque<>();
             System.out.println("--------初始化参数完毕-----------");
         }catch (Exception e){
 

@@ -125,6 +125,29 @@ public class XmlDatasFactory {
     }
 
     /**
+     * 根据表名获取表
+     * @param tableName
+     * @param rootTalbe
+     * @return
+     */
+    public static Table getTableByTableName(String tableName,Table rootTalbe){
+        Table result=null;
+        if (tableName.equals(rootTalbe.getName()))
+            result=rootTalbe;
+        else {
+            List<Table> childTables=rootTalbe.getChildTalbes();
+            if (childTables==null||childTables.size()<=0)
+                return null;
+            for (Table table:childTables){
+                result=XmlDatasFactory.getTableByTableName(tableName,table);
+                if (result!=null)
+                    break;
+            }
+        }
+        return result;
+    }
+
+    /**
      *获取顶层表
      * @param column
      */

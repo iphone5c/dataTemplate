@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 字段数据业务
@@ -150,19 +152,56 @@ public class ColunmDataService {
     public void getTableData(Table table,Integer recordNum,Map<String,Object> parentRecord,ApplicationContext applicationContext){
         List<Map<String,Object>> records=new ArrayList<>();
         List<Map<String,Object>> userList= Params.userList;
-        for (int i=0;i<recordNum;i++){
-            Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
-            records.add(record);
-            for (Table child:table.getChildTalbes()){
-                this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext);
+        try {
+            long start=System.currentTimeMillis();
+            for (int i=0,j=0;i<recordNum;i++,j++){
+                Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
+                records.add(record);
+                for (Table child:table.getChildTalbes()){
+                    this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext);
+                }
+                if (j>100000) {
+                    Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
+                    files.put(table.getName(), records);
+                    Params.blockingDeque.put(files);
+                    records=new ArrayList<>();
+                    j=0;
+                }
             }
-            if (records.size()>10000) {
-                StartMain.fileIO(table,records);
-//                this.saveFiles(table,records);
+            if (records.size()>0){
+                Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
+                files.put(table.getName(),records);
+                Params.blockingDeque.put(files);
             }
+            if (parentRecord==null){
+                System.out.println("内存组装数据结束，总耗时："+(System.currentTimeMillis()-start)/1000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-//        this.saveFiles(table, records);
-        StartMain.fileIO(table,records);
+    }
+
+    public void ioFileOut(String tableName,List<Map<String,Object>> records){
+        try {
+            long start=System.currentTimeMillis();
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+tableName+".txt",true));
+            for (Map<String,Object> record:records){
+                StringBuilder info=new StringBuilder();
+                for (Map.Entry<String, Object> column : record.entrySet()) {
+                    info.append(column.getValue()).append(",");
+                }
+                info.deleteCharAt(info.length() - 1);
+                info.append("\r\n");
+                buffer.write(info.toString());
+                buffer.flush();
+            }
+            buffer.close();
+            if (tableName.equals("T_XS_AJ")){
+                System.out.println("结束时间："+(System.currentTimeMillis()-start)/1000);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -170,7 +209,7 @@ public class ColunmDataService {
      * @return
      */
     private static String getUUID(){
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replaceAll("-","");
     }
 
     /**

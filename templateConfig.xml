@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 加压数据格式定义 -->
 <tables>
-    <table name="T_XS_AJ" num="100000" schema="" catalog="" textfile="a.txt">
+    <table name="T_XS_AJ" num="1" schema="" catalog="" textfile="a.txt">
 	  <!-- 列定义 name：字段名
                	  type:产生数据方式：PK,FK,CODE(单值代码),DATE,NUM,STRING,ORGAN(一条记录中的组织机构必须具有级联性质),TEXT(从文本中随机读取长度的字符串),无 
 	              generator：生成方式：SEQ(序列),RANDOM(允许范围内的随机数字，随机时间,随机人员部门单位),UUID,LABLE:标签表达式(由字符串+多个标签表达式拼接组成),比例分布,用##来表示比例，例如#1001:1,1002:6,1003:1#。
