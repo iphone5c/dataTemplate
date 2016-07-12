@@ -2,6 +2,8 @@ package data.Thread;
 
 import data.core.Table;
 import data.core.XmlDatasFactory;
+import data.file.CreateSqlFile;
+import data.file.FileBatInsert;
 import data.jdbc.JdbcBatInsert;
 import data.utils.Params;
 
@@ -33,10 +35,11 @@ public class FileIOThread implements Runnable {
             while (count<num) {
                 Map<String, List<Map<String, Object>>> map = Params.blockingDeque.take();
                 for (Map.Entry<String,List<Map<String, Object>>> obj:map.entrySet()){
-                    if (obj.getKey().equals(table.getName()))
+                    if (obj.getKey().equals(table.getName())){
                         count+=obj.getValue().size();
+                    }
 //                    this.ioFileOut(obj.getKey(),obj.getValue());
-                    JdbcBatInsert.insertData(XmlDatasFactory.getTableByTableName(obj.getKey(),table),obj.getValue());
+                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
                 }
             }
         } catch (Exception e) {
