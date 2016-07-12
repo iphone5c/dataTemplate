@@ -149,30 +149,46 @@ public class ColunmDataService {
      * @param parentRecord
      * @param applicationContext
      */
-    public void getTableData(Table table,Integer recordNum,Map<String,Object> parentRecord,ApplicationContext applicationContext){
-        List<Map<String,Object>> records=new ArrayList<>();
+    public void getTableData(Table table,Integer recordNum,Map<String,Object> parentRecord,ApplicationContext applicationContext,Map<String,List<Map<String,Object>>> tablesRecords){
+        List<Map<String,Object>> records=tablesRecords.get(table.getName());
         List<Map<String,Object>> userList= Params.userList;
+        if (records==null){
+            records=new ArrayList<Map<String, Object>>();
+            tablesRecords.put(table.getName(),records);
+        }
         try {
             long start=System.currentTimeMillis();
             for (int i=0,j=0;i<recordNum;i++,j++){
                 Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
                 records.add(record);
                 for (Table child:table.getChildTalbes()){
-                    this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext);
+                    this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext,tablesRecords);
                 }
-                if (j>100000) {
+                if (tablesRecords.get(table.getName()).size()>10000){
                     Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
-                    files.put(table.getName(), records);
+                    files.put(table.getName(), tablesRecords.get(table.getName()));
                     Params.blockingDeque.put(files);
-                    records=new ArrayList<>();
-                    j=0;
+
+                    tablesRecords.remove(table.getName());
+                    records=new ArrayList<Map<String, Object>>();
+                    tablesRecords.put(table.getName(),records);
+//                    tablesRecords.get(table.getName()).clear();
                 }
+//                tablesRecords.get(table.getName()).add(record);
+//                if (j>100000) {
+//                    Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
+//                    files.put(table.getName(), records);
+//                    Params.blockingDeque.put(files);
+//                    records=new ArrayList<>();
+//                    j=0;
+//                }
             }
-            if (records.size()>0){
-                Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
-                files.put(table.getName(),records);
-                Params.blockingDeque.put(files);
-            }
+//            tablesRecords.get(table.getName()).addAll(records);
+//            if (records.size()>0){
+//                Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
+//                files.put(table.getName(),records);
+//                Params.blockingDeque.put(files);
+//            }
             if (parentRecord==null){
                 System.out.println("内存组装数据结束，总耗时："+(System.currentTimeMillis()-start)/1000);
             }

@@ -3,7 +3,10 @@ package data.Thread;
 import data.core.ApplicationContext;
 import data.core.ColunmDataService;
 import data.core.Table;
+import data.utils.Params;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -27,6 +30,14 @@ public class StartThread implements Runnable {
 
     @Override
     public void run() {
-        colunmDataService.getTableData(table,num,null,applicationContext);
+        Map<String,List<Map<String,Object>>> tablesRecords=new HashMap<String,List<Map<String,Object>>>();
+        colunmDataService.getTableData(table,num,null,applicationContext,tablesRecords);
+//        System.out.println(tablesRecords);
+        try {
+            Params.blockingDeque.put(tablesRecords);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        tablesRecords.clear();
     }
 }
