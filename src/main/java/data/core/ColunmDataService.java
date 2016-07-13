@@ -157,7 +157,6 @@ public class ColunmDataService {
             tablesRecords.put(table.getName(),records);
         }
         try {
-            long start=System.currentTimeMillis();
             for (int i=0,j=0;i<recordNum;i++,j++){
                 Map<String,Object> record=this.getRecord(table.getColumns(), userList.get(DataUtils.getRanDom(0, userList.size() - 1)),parentRecord, applicationContext);
                 records.add(record);
@@ -172,25 +171,10 @@ public class ColunmDataService {
                     tablesRecords.remove(table.getName());
                     records=new ArrayList<Map<String, Object>>();
                     tablesRecords.put(table.getName(),records);
-//                    tablesRecords.get(table.getName()).clear();
                 }
-//                tablesRecords.get(table.getName()).add(record);
-//                if (j>100000) {
-//                    Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
-//                    files.put(table.getName(), records);
-//                    Params.blockingDeque.put(files);
-//                    records=new ArrayList<>();
-//                    j=0;
-//                }
             }
-//            tablesRecords.get(table.getName()).addAll(records);
-//            if (records.size()>0){
-//                Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
-//                files.put(table.getName(),records);
-//                Params.blockingDeque.put(files);
-//            }
-            if (parentRecord==null){
-                System.out.println("内存组装数据结束，总耗时："+(System.currentTimeMillis()-start)/1000);
+            if (tablesRecords.get(table.getName()).size()<=0){
+                tablesRecords.remove(table.getName());
             }
         } catch (Exception e) {
             e.printStackTrace();

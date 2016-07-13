@@ -32,12 +32,10 @@ public class StartThread implements Runnable {
     public void run() {
         Map<String,List<Map<String,Object>>> tablesRecords=new HashMap<String,List<Map<String,Object>>>();
         colunmDataService.getTableData(table,num,null,applicationContext,tablesRecords);
-//        System.out.println(tablesRecords);
         try {
             Params.blockingDeque.put(tablesRecords);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        tablesRecords.clear();
     }
 }

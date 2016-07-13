@@ -38,7 +38,6 @@ public class FileIOThread implements Runnable {
                     if (obj.getKey().equals(table.getName())){
                         count+=obj.getValue().size();
                     }
-//                    this.ioFileOut(obj.getKey(),obj.getValue());
                     CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
                 }
             }
