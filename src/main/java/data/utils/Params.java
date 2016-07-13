@@ -32,6 +32,8 @@ public class Params {
 
     public static List<Map<String,Object>> tableList = new ArrayList<>();
 
+    public static Integer insertSize=10000;
+
     //获取表结构("tableName","insert into tableName (a,b,c) values")
     public static Map tableMap = new HashMap<String,Object>();
     /**
