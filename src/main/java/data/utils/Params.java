@@ -2,6 +2,7 @@ package data.utils;
 
 import data.dbcache.DataCache;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -27,7 +28,7 @@ public class Params {
     public static List<Map<String,Object>> userList;
     public static List<Map<String,Object>> cropList;
     public static List<Map<String,Object>> deptList;
-    public static String sqlDir;
+    public static String sqlDir=System.getProperty("user.dir").replace("\\","/").concat("/resource/sql");
     public static LinkedBlockingDeque<Map<String,List<Map<String,Object>>>> blockingDeque;
 
     public static List<Map<String,Object>> tableList = new ArrayList<>();
@@ -58,9 +59,13 @@ public class Params {
             cropList = DataCache.getDataList(queryCropSql);
             deptList = DataCache.getDataList(queryDeptSql);
             blockingDeque=new LinkedBlockingDeque<>();
-//            sqlDir = "/resource/sql";
-            sqlDir = System.getProperty("user.dir").replace("\\","/").concat("/resource/sql");
-//            sqlDir = "E:/idea/dataTemplate" +"/"+ "resource" +"/"+ "sql";
+            File dir = new File(Params.sqlDir);
+            if(!dir.exists()){
+                //创建目录
+                dir.mkdirs();
+            }else {
+                dir.delete();
+            }
             System.out.println("--------初始化参数完毕-----------");
         }catch (Exception e){
 
