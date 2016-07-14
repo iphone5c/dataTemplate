@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by gene on 2016/7/11.
@@ -23,6 +24,7 @@ public class CreateSqlFile {
     public static void createFile(Table table,List<Map<String,Object>> list){
         //以时间戳加表名命名文件夹名称
         long dateTime = System.currentTimeMillis();
+        String uuid = UUID.randomUUID().toString().replace("-","");
         if(table == null || list == null || list.size() == 0){
             System.out.println("组装sql文件时，表和数据不能为空.");
         }
@@ -59,7 +61,7 @@ public class CreateSqlFile {
                 //创建目录
                 dir.mkdirs();
             }
-            String sqlPath = Params.sqlDir + "/" + dateTime + "_" + table.getName()+".sql";
+            String sqlPath = Params.sqlDir + "/" + uuid + "_" + table.getName()+".sql";
             FileWriter fw=null;
             fw=new FileWriter(sqlPath);
             BufferedWriter buffer = new BufferedWriter(fw);
