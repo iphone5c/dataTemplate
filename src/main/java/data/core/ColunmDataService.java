@@ -163,7 +163,7 @@ public class ColunmDataService {
                 for (Table child:table.getChildTalbes()){
                     this.getTableData(child, Integer.parseInt(this.getQZ(child.getProportion(), child.getName(), applicationContext)), record, applicationContext,tablesRecords);
                 }
-                if (tablesRecords.get(table.getName()).size()>Params.insertSize){
+                if (tablesRecords.get(table.getName()).size()>=Params.insertSize){
                     Map<String,List<Map<String,Object>>> files=new HashMap<String,List<Map<String,Object>>>();
                     files.put(table.getName(), tablesRecords.get(table.getName()));
                     Params.blockingDeque.put(files);
@@ -208,8 +208,10 @@ public class ColunmDataService {
      * 获取UUID
      * @return
      */
-    private static String getUUID(){
-        return UUID.randomUUID().toString().replaceAll("-","");
+    private String getUUID(){
+        synchronized (this){
+            return UUID.randomUUID().toString().replaceAll("-","");
+        }
     }
 
     /**

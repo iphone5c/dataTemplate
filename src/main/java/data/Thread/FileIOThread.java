@@ -5,11 +5,13 @@ import data.core.XmlDatasFactory;
 import data.file.CreateSqlFile;
 import data.file.FileBatInsert;
 import data.jdbc.JdbcBatInsert;
+import data.utils.DataUtils;
 import data.utils.Params;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -38,7 +40,9 @@ public class FileIOThread implements Runnable {
                     if (obj.getKey().equals(table.getName())){
                         count+=obj.getValue().size();
                     }
+                    System.out.println("执行插入开始："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
                     CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
+                    System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
                 }
             }
         } catch (Exception e) {

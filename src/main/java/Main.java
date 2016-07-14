@@ -24,7 +24,7 @@ public class Main {
         //初始化应用上下文
         ApplicationContext applicationContext=new ApplicationContext();
 
-        StartMain.start(1,applicationContext);
+        StartMain.start(10,applicationContext);
         //todo 根据模版生成数据
 //        System.out.println(results);
         //获取数据库连接

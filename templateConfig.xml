@@ -14,7 +14,7 @@
 				  {}:表示对生成方式的引用
 				  列内部表示字段中文名，可以不写
          -->
-	  <column name="C_BH"    type="PK"     generator="UUID" >编号</column>                                         
+	  <column name="C_BH"    type="PK"     generator="SEQ"     min="1" >编号</column>
 	  <column name="N_AJXH"  type="NUM"    generator="SEQ"     min="1" >案件序号</column>
 	  <column name="N_AJBS"  type="STRING" generator="LABLE"   content="[N_JBFY][N_AJXH]">案件标识</column>
 	  <column name="N_AJLB"  type="CODE"   generator="#1001:1,1002:6,1003:1#" >案件类别</column>
@@ -32,7 +32,7 @@
 	  <column name="C_SSQQ"  type="STRING" generator="TEXT" >诉讼请求</column>
 	  <!-- 子表 proportion表示产生数据的比例，格式如 #1:2,0:8# 表示产生1条子表记录的权重为2，0条子表的权重为8-->
         <table name="T_XS_YSQK"  proportion="#1:2,0:8#" schema="" catalog="">
-            <column name="C_BH"    type="PK" generator="UUID" >编号</column>
+            <column name="C_BH"    type="PK" generator="SEQ"     min="1" >编号</column>
             <column name="C_BH_AJ" type="FK" content="[T_XS_AJ.C_BH]">案件编号</column>
             <column name="N_AJLB"  type="CODE"   generator="#101:1,102:6,103:3#" >案件类别</column>
             <column name="N_JBFY"  type="ORGAN"  generator="RANDOM" contnt="corp" >经办法院</column>
@@ -45,7 +45,7 @@
         </table>
         <!-- 子表 刑事被告人 -->
         <table name="T_XS_BGR" proportion="#1:90,2:6,3:3,4:1#" schema="" catalog="">
-            <column name="C_BH"     type="PK" generator="UUID" >编号</column>
+            <column name="C_BH"     type="PK" generator="SEQ"     min="1" >编号</column>
             <column name="C_BH_AJ"  type="FK" content="[T_XS_AJ.C_BH]" >案件编号</column>
             <column name="C_MC"     type="STRING" generator="TEXT" >姓名/名称</column>
             <column name="N_XB"     type="CODE"   generator="#101:1,102:6,103:3#">性别</column>
@@ -61,7 +61,7 @@
             <column name="C_DZYX"   type="STRING" generator="LABLE" content="{TEXT}@demo.com" >电子邮箱</column>
             <!-- 被告人子表 刑事被告人指控罪名 -->
             <table name="T_XS_ZKZM" proportion="#1:90,2:6,3:4#" schema="" catalog="">
-                <column name="C_BH"     type="PK" generator="UUID" >编号</column>
+                <column name="C_BH"     type="PK" generator="SEQ"     min="1" >编号</column>
                 <column name="C_BH_AJ"  type="FK" content="[T_XS_BGR.C_BH_AJ]" >案件编号</column>
                 <column name="C_BH_BGR" type="FK" content="[T_XS_BGR.C_BH]">被告人编号</column>
                 <column name="N_ZM"     type="CODE"   generator="#100001:1,100002:2,100003:7#" >罪名</column>
