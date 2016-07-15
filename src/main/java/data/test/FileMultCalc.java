@@ -2,9 +2,7 @@ package data.test;
 import data.utils.Factory;
 import data.utils.Params;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Date;
@@ -12,10 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+/**
+ * 根据生成的表数据文件来写bat文件
+ */
 public class FileMultCalc implements Callable<String> {
 
     private int thread;
-//    private static int batchSize = 1000;
     private String tableStruct;
     private String fileName;
     public int getThread() {
@@ -42,53 +42,27 @@ public class FileMultCalc implements Callable<String> {
         this.fileName = fileName;
     }
 
-    private String getMapString(Map<String,Object> map){
-        StringBuffer sb = new StringBuffer();
-      /*  sb.append("\"").append(map.get("c_key")).append("\"").append(",");
-        sb.append("\"").append(map.get("n_value")).append("\"").append(",");
-        sb.append("\"").append(map.get("n_fldlength")).append("\"").append("\n");*/
-
-        sb.append(map.get("c_key")).append(",");
-        sb.append(map.get("n_value")).append("\n");
-      /*  sb.append(map.get("n_value")).append(",");
-        sb.append(map.get("n_fldlength")).append("\n");*/
-        return sb.toString();
-    }
-
     @Override
     public String call(){
         try{
-//            String fileName = "E:/test/"+"a"+thread+".txt";
-            //写入文件地址
-        /*    FileWriter writer = new FileWriter(fileName);
-            BufferedWriter buffer = new BufferedWriter(writer);
-            StringBuilder sb = new StringBuilder();
-            int count = 0;
-            for(Map<String,Object> map : list){
-                sb.append(getMapString(map));
-                if(++count % batchSize == 0){
-                    buffer.write(sb.toString());
-                    sb = new StringBuilder();
-                }
-            }
-            buffer.write(sb.toString());
-            buffer.flush();
-            buffer.close();*/
-
-            String batPath="bat"+thread+".bat";
+            System.out.println(new Date() + "----------线程" + thread + "----------执行开始.....");
+            String batPath=TestSql.batDir+"/"+"bat"+thread+".bat";
             //创建bat文件
             creatBat(batPath,fileName);
-
-            //运行bat文件
-            callCmd(batPath);
         }catch (Exception e){
+            System.out.println("------创建bat文件ERROR:" + thread + e.getMessage());
         }finally {
         }
-        System.out.println(new Date() + "----------线程" + thread + "----------执行完毕.....");
+        System.out.println(new Date() + "----------创建bat线程" + thread + "----------执行完毕.....");
         return null;
     }
 
-    //创建bat文件
+    /**
+     * 创建bat文件
+     * @param batPath
+     * @param filePath
+     * @throws Exception
+     */
     public void creatBat(String batPath,String filePath) throws Exception{
         FileWriter fw=null;
         try {
@@ -104,7 +78,7 @@ public class FileMultCalc implements Callable<String> {
                     .append("set fileUrl="+filePath).append("\n")
                     .append("set tableStruct="+tableStruct).append("\n")
                     .append("%psql% -c \"copy %tableStruct% from E'%fileUrl%' USING delimiters ',';\"").append("\n")
-                    .append("echo \"data copy end\"").append("\n");
+                    .append("echo "+filePath+" copy data end ").append("\n");
 
             buffer.write(sb.toString());
             buffer.flush();
@@ -120,15 +94,6 @@ public class FileMultCalc implements Callable<String> {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    public void  callCmd(String locationCmd) throws Exception{
-        try {
-            Process child = Runtime.getRuntime().exec("cmd.exe /C start /b "+locationCmd);
-            child.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
