@@ -181,29 +181,6 @@ public class ColunmDataService {
         }
     }
 
-    public void ioFileOut(String tableName,List<Map<String,Object>> records){
-        try {
-            long start=System.currentTimeMillis();
-            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+tableName+".txt",true));
-            for (Map<String,Object> record:records){
-                StringBuilder info=new StringBuilder();
-                for (Map.Entry<String, Object> column : record.entrySet()) {
-                    info.append(column.getValue()).append(",");
-                }
-                info.deleteCharAt(info.length() - 1);
-                info.append("\r\n");
-                buffer.write(info.toString());
-                buffer.flush();
-            }
-            buffer.close();
-            if (tableName.equals("T_XS_AJ")){
-                System.out.println("结束时间："+(System.currentTimeMillis()-start)/1000);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 获取UUID
      * @return

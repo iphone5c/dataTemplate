@@ -1,5 +1,6 @@
 package data.Thread;
 
+import data.core.Column;
 import data.core.Table;
 import data.core.XmlDatasFactory;
 import data.file.CreateSqlFile;
@@ -40,9 +41,8 @@ public class FileIOThread implements Runnable {
                     if (obj.getKey().equals(table.getName())){
                         count+=obj.getValue().size();
                     }
-                    System.out.println("执行插入开始："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
-                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
-                    System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
+//                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
+                    this.ioFileOut(XmlDatasFactory.getTableByTableName(obj.getKey(), table),obj.getValue());
                 }
             }
         } catch (Exception e) {
@@ -50,22 +50,47 @@ public class FileIOThread implements Runnable {
         }
     }
 
-    public void ioFileOut(String tableName,List<Map<String,Object>> records){
+    public void ioFileOut(Table table,List<Map<String,Object>> records){
         try {
-            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+tableName+".txt",true));
-            for (Map<String,Object> record:records){
-                StringBuilder info=new StringBuilder();
-                for (Map.Entry<String, Object> column : record.entrySet()) {
-                    info.append(column.getValue()).append(",");
-                }
-                info.deleteCharAt(info.length() - 1);
-                info.append("\r\n");
-                buffer.write(info.toString());
-                buffer.flush();
-            }
+            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".sql",true));
+            String info=this.getSQL(table,records);
+            buffer.write(info);
+            buffer.flush();
             buffer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getColumns(Table table){
+        StringBuffer columns=new StringBuffer();
+        for (Column column:table.getColumns()){
+            columns.append(column.getName()).append(",");
+        }
+        columns.deleteCharAt(columns.length()-1);
+        return columns.toString();
+    }
+
+    private String getSQL(Table table,List<Map<String,Object>> records){
+        StringBuffer sql=new StringBuffer();
+        StringBuffer columns=new StringBuffer();
+        StringBuffer columnsValues=new StringBuffer();
+        sql.append("INSERT INTO ").append(table.getName()).append("(").append(this.getColumns(table)).append(") VALUES");
+        for (Map<String,Object> record:records){
+            columnsValues.append("(");
+            for (Column column:table.getColumns()){
+                Object columnValue = record.get(column.getName());
+                if(columnValue == null){
+                    columnsValues.append(columnValue).append(",");
+                }else {
+                    columnsValues.append("'").append(columnValue.toString().replace("'","''")).append("'").append(",");
+                }
+            }
+            columnsValues.deleteCharAt(columnsValues.length()-1);
+            columnsValues.append("),");
+        }
+        columnsValues.deleteCharAt(columnsValues.length()-1);
+        sql.append(columnsValues);
+        return sql.toString();
     }
 }

@@ -1,5 +1,6 @@
 package data.core;
 
+import data.utils.ColumnType;
 import data.utils.DataUtils;
 import data.utils.Params;
 import javafx.scene.control.Tab;
@@ -191,6 +192,26 @@ public class XmlDatasFactory {
             throw new IllegalArgumentException("此表的字段集合不能为空或null");
         for (Column col:table.getColumns()){
             if (col.getName().equals(name)){
+                column=col;
+                break;
+            }
+        }
+        return column;
+    }
+
+    /**
+     * 根据表获取主键列
+     * @param table
+     * @return
+     */
+    public static Column getColumnPKByTable(Table table){
+        Column column=null;
+        if (table==null)
+            throw new IllegalArgumentException("table不能为空或null");
+        if(table.getColumns()==null)
+            throw new IllegalArgumentException("此表的字段集合不能为空或null");
+        for (Column col:table.getColumns()){
+            if (col.getColumnType()== ColumnType.PK){
                 column=col;
                 break;
             }

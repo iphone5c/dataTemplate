@@ -16,7 +16,7 @@ public class FileMultCalc implements Callable<String> {
 
     private int thread;
 //    private static int batchSize = 1000;
-    private String tableStruct;
+    private static String tableStruct;
     private String fileName;
     public int getThread() {
         return thread;
@@ -89,7 +89,7 @@ public class FileMultCalc implements Callable<String> {
     }
 
     //创建bat文件
-    public void creatBat(String batPath,String filePath) throws Exception{
+    public static void creatBat(String batPath,String filePath) throws Exception{
         FileWriter fw=null;
         try {
             fw=new FileWriter(batPath);
