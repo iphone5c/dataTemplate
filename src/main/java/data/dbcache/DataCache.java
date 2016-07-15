@@ -24,7 +24,7 @@ public class DataCache {
             ResultSet set = ps.executeQuery();
             return resultSetToList(set);
         }catch (Exception e){
-
+            e.printStackTrace();
         }finally {
             try{
                 conn.close();
