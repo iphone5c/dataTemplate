@@ -7,10 +7,8 @@ import data.utils.Params;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by gene on 2016/7/11.
@@ -25,6 +23,7 @@ public class CreateSqlFile {
     public static void createFile(Table table,List<Map<String,Object>> list){
         //以时间戳加表名命名文件夹名称
         long dateTime = System.currentTimeMillis();
+        String uuid = UUID.randomUUID().toString().replace("-","");
         if(table == null || list == null || list.size() == 0){
             System.out.println("组装sql文件时，表和数据不能为空.");
         }
@@ -55,79 +54,24 @@ public class CreateSqlFile {
         values.deleteCharAt(values.length() -1);
         StringBuffer sql = new StringBuffer();
         sql.append(tableStruct).append(values);
-        long endTime = System.currentTimeMillis();
-        System.out.println("文件大小："+sql.toString().toCharArray().length/1024+"Kb，每次拼装SQL时间："+(endTime-dateTime));
-//        File dir = new File(Params.sqlDir);
-//        if(!dir.exists()){
-//            //创建目录
-//            dir.mkdirs();
-//        }
-        ioFileOut(sql.toString(), table.getName());
-//        ioFile(sql.toString(), table.getName());
-        System.out.println("=======================");
-//        try{
-//            File dir = new File(Params.sqlDir);
-//            if(!dir.exists()){
-//                //创建目录
-//                dir.mkdirs();
-//            }
-//            String sqlPath = Params.sqlDir + "/" + dateTime + "_" + table.getName()+".sql";
-//            FileWriter fw=null;
-//            fw=new FileWriter(sqlPath);
-//            BufferedWriter buffer = new BufferedWriter(fw);
-//            buffer.write(sql.toString());
-//            buffer.flush();
-//            buffer.close();
-//            FileBatInsert.fileBatDeal(new File(sqlPath));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-
-    }
-
-    public static void ioFile(String info,String tableName){
-        long start=System.currentTimeMillis();
         try{
             File dir = new File(Params.sqlDir);
             if(!dir.exists()){
                 //创建目录
                 dir.mkdirs();
             }
-            String uuid= UUID.randomUUID().toString().replaceAll("-","");
-            String sqlPath = Params.sqlDir + "/" + uuid + "_" + tableName+".sql";
+            String sqlPath = Params.sqlDir + "/" + dateTime + "_" + table.getName()+".sql";
             FileWriter fw=null;
             fw=new FileWriter(sqlPath);
             BufferedWriter buffer = new BufferedWriter(fw);
-            buffer.write(info);
+            buffer.write(sql.toString());
             buffer.flush();
             buffer.close();
             FileBatInsert.fileBatDeal(new File(sqlPath));
         }catch (Exception e){
             e.printStackTrace();
         }
-        long end=System.currentTimeMillis();
-        System.out.println("写入文件消耗的时间："+(end-start));
-    }
 
-    public static void ioFileOut(String info,String tableName){
-        long start=System.currentTimeMillis();
-        try {
-            File dir = new File(Params.sqlDir);
-            if(!dir.exists()){
-                //创建目录
-                dir.mkdirs();
-            }
-            String uuid= UUID.randomUUID().toString().replaceAll("-","");
-            String sqlPath = Params.sqlDir + "/" + uuid + "_" + tableName+".sql";
-            BufferedWriter buffer = new BufferedWriter(new FileWriter(sqlPath));
-            buffer.write(info);
-            buffer.flush();
-            buffer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        long end=System.currentTimeMillis();
-        System.out.println("写入文件消耗的时间："+(end-start));
     }
 
     /**
