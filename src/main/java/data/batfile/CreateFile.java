@@ -48,7 +48,7 @@ public class CreateFile {
                 //创建目录
                 dir.mkdirs();
             }
-            String dataPath = fileDir + "/" + uuid + "_" + table.getName()+".txt";
+            String dataPath = fileDir + "/" + uuid + "_" + table.getName()+".cvs";
 
             FileOutputStream fos = new FileOutputStream(dataPath);
             OutputStreamWriter osw = new OutputStreamWriter(fos, "GBK");
