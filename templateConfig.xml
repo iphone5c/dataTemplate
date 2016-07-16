@@ -35,7 +35,7 @@
             <column name="C_BH"    type="PK" generator="UUID" >编号</column>
             <column name="C_BH_AJ" type="FK" content="[T_XS_AJ.C_BH]">案件编号</column>
             <column name="N_AJLB"  type="CODE"   generator="#101:1,102:6,103:3#" >案件类别</column>
-            <column name="N_JBFY"  type="ORGAN"  generator="RANDOM" contnt="corp" >经办法院</column>
+            <column name="N_JBFY"  type="ORGAN"  generator="RANDOM" content="corp" >经办法院</column>
             <column name="N_CBSPT" type="ORGAN"  generator="RANDOM" content="dept" >承办审判庭</column>
             <column name="C_AH"    type="STRING" generator="LABLE"   content="{#2006:1,2007:8,2008:1#}川刑更{SEQ}号" min="1" >案号</column>
             <column name="N_SPCX"  type="CODE"  generator="#101:1,102:6,103:3#" >审判程序</column>
