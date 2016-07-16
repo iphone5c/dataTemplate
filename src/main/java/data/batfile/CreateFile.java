@@ -42,7 +42,7 @@ public class CreateFile {
             values.append(val).append("\n");
         }
         try{
-            String fileDir = Params.sqlDir + "/" + table.getName() + "/data";
+            String fileDir = Params.sqlDir + "/data";
             File dir = new File(fileDir);
             if(!dir.exists()){
                 //创建目录
@@ -68,7 +68,7 @@ public class CreateFile {
      */
     public void createBatFile(Table table,String dataPath){
         String uuid = UUID.randomUUID().toString().replace("-","");
-        String fileDir = Params.sqlDir + "/" + table.getName() + "/bat";
+        String fileDir = Params.sqlDir  + "/bat";
         String tableStruct = getTableStructSql(table);
         File dir = new File(fileDir);
         if(!dir.exists()){
