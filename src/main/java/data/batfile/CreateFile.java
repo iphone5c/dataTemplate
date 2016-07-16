@@ -33,7 +33,7 @@ public class CreateFile {
             for(Column column : table.getColumns()){
                 Object columnValue = map.get(column.getName());
                 if(columnValue == null){
-                    val.append(columnValue).append(",");
+                    val.append(",");
                 }else {
                     val.append(columnValue.toString()).append(",");
                 }
@@ -91,7 +91,9 @@ public class CreateFile {
                     .append("set tableStruct="+tableStruct).append("\n")
                     .append("%psql% -c \"copy %tableStruct% from E'%fileUrl%' USING delimiters ',';\"").append("\n")
                     .append("echo "+dataPath+" copy data end ").append("\n")
-                    .append("exit");
+                    .append("del "+dataPath).append("\n")
+                    .append("del " + batPath).append("\n");
+//                    .append("exit");
             buffer.write(sb.toString());
             buffer.flush();
             buffer.close();

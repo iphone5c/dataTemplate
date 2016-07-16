@@ -42,7 +42,7 @@ public class FileIOThread implements Runnable {
                     createFile.createDataFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
                     System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
 //                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
-                    this.ioFileOut(XmlDatasFactory.getTableByTableName(obj.getKey(), table),obj.getValue());
+//                    this.ioFileOut(XmlDatasFactory.getTableByTableName(obj.getKey(), table),obj.getValue());
                 }
             }
         } catch (Exception e) {
