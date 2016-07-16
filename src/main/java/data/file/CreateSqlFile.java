@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by gene on 2016/7/11.
@@ -61,7 +60,7 @@ public class CreateSqlFile {
                 //创建目录
                 dir.mkdirs();
             }
-            String sqlPath = Params.sqlDir + "/" + uuid + "_" + table.getName()+".sql";
+            String sqlPath = Params.sqlDir + "/" + dateTime + "_" + table.getName()+".sql";
             FileWriter fw=null;
             fw=new FileWriter(sqlPath);
             BufferedWriter buffer = new BufferedWriter(fw);
