@@ -67,6 +67,7 @@ public class CreateFile {
      * @param dataPath
      */
     public void createBatFile(Table table,String dataPath){
+        FileBatInsert fileBatInsert = new FileBatInsert();
         String uuid = UUID.randomUUID().toString().replace("-","");
         String fileDir = Params.sqlDir  + "/bat";
         String tableStruct = getTableStructSql(table);
@@ -97,6 +98,7 @@ public class CreateFile {
             buffer.write(sb.toString());
             buffer.flush();
             buffer.close();
+            fileBatInsert.callCmd(batPath);
         } catch (Exception e) {
             e.printStackTrace();
         }finally{
