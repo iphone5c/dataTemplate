@@ -92,7 +92,7 @@ public class CreateFile {
                     .append("%psql% -c \"copy %tableStruct% from E'%fileUrl%' USING delimiters ',';\"").append("\n")
                     .append("echo "+dataPath+" copy data end ").append("\n")
                     .append("del "+dataPath.replace("/","\\")).append("\n")
-                    .append("del " + batPath.replace("/","\\")).append("\n")
+//                    .append("del " + batPath.replace("/","\\")).append("\n")
                     .append("exit");
             buffer.write(sb.toString());
             buffer.flush();
