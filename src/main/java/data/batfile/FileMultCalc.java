@@ -1,35 +1,51 @@
 package data.batfile;
-
+import data.test.TestSql;
 import data.utils.Params;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.SQLExec;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.util.Date;
+import java.util.concurrent.Callable;
 
 /**
- * Created by wy on 2016/7/8.
+ * 根据生成的表数据文件来写bat文件
  */
-public class FileBatInsert {
+public class FileMultCalc implements Callable<String> {
 
-    /**
-     * 后台执行cmd文件
-     * @param locationCmd
-     * @throws Exception
-     */
-    public void  callCmd(String locationCmd) throws Exception{
-        try {
-            Process child = Runtime.getRuntime().exec("cmd.exe /C start "+locationCmd);
+    private int thread;
+    private String fileName;
+    public int getThread() {
+        return thread;
+    }
+
+    public void setThread(int thread) {
+        this.thread = thread;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public String call(){
+        try{
+            System.out.println(new Date() + "----------线程" + thread + "----------执行开始.....");
+            //执行bat文件
+            Process child = Runtime.getRuntime().exec("cmd.exe /C start "+fileName);
             child.waitFor();
             String result[] = doWaitFor(child);
-            System.out.println("跑bat文件导入数据的结果:" + result[0]+result[1]+"----");
-        } catch (Exception e) {
-            System.out.println("=============跑bat文件出错：" + e.getMessage());
-            e.printStackTrace();
+            if(result != null){
+                System.out.print(result[0]);
+            }
+        }catch (Exception e){
+            System.out.println("------创建bat文件ERROR:" + thread + e.getMessage());
+        }finally {
         }
+        System.out.println(new Date() + "----------执行bat线程" + thread + "----------执行完毕.....");
+        return null;
     }
 
     /**
@@ -65,5 +81,4 @@ public class FileBatInsert {
         }
         return new String[]{outbuild.toString(),errbuild.toString()};
     }
-
 }
