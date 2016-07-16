@@ -2,9 +2,7 @@ package data.Thread;
 
 import data.core.Table;
 import data.core.XmlDatasFactory;
-import data.file.CreateSqlFile;
-import data.file.FileBatInsert;
-import data.jdbc.JdbcBatInsert;
+import data.batfile.CreateFile;
 import data.utils.DataUtils;
 import data.utils.Params;
 
@@ -14,8 +12,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-
 /**
  * Created by wy on 2016/7/5.
  */
@@ -33,6 +29,7 @@ public class FileIOThread implements Runnable {
     @Override
     public void run() {
         try {
+            CreateFile createFile = new CreateFile();
             int count=0;
             while (count<num) {
                 Map<String, List<Map<String, Object>>> map = Params.blockingDeque.take();
@@ -41,7 +38,7 @@ public class FileIOThread implements Runnable {
                         count+=obj.getValue().size();
                     }
                     System.out.println("执行插入开始："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
-                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
+                    createFile.createDataFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
                     System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
                 }
             }

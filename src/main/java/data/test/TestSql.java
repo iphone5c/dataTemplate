@@ -218,20 +218,4 @@ public class TestSql {
         service.shutdown();
     }*/
 
-    /**
-     * 生成list数据
-     * @return
-     */
-   /* public static List<Map<String,Object>> getDataList(){
-        List<Map<String,Object>> list = new ArrayList<>();
-        for(int i=0; i<dataSize; i++){
-            Map<String,Object> map = new HashMap<>();
-            map.put("c_key",i);
-            map.put("n_value",i);
-            map.put("n_fldlength",i);
-            list.add(map);
-        }
-        System.out.println("生成list数据结束----------"+new Date());
-        return list;
-    }*/
 }
