@@ -7,9 +7,7 @@ import data.batfile.CreateFile;
 import data.utils.DataUtils;
 import data.utils.Params;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +36,10 @@ public class FileIOThread implements Runnable {
                     if (obj.getKey().equals(table.getName())){
                         count+=obj.getValue().size();
                     }
-                    System.out.println("执行插入开始："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
-                    createFile.createDataFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
-                    System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
-//                    CreateSqlFile.createFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
-//                    this.ioFileOut(XmlDatasFactory.getTableByTableName(obj.getKey(), table),obj.getValue());
+//                    System.out.println("执行插入开始："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
+//                    createFile.createDataFile(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
+                    this.ioFileOut(XmlDatasFactory.getTableByTableName(obj.getKey(), table), obj.getValue());
+//                    System.out.println("执行插入结束："+obj.getKey()+"====>"+obj.getValue().size()+"====>"+ DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG));
                 }
             }
         } catch (Exception e) {
@@ -52,45 +49,27 @@ public class FileIOThread implements Runnable {
 
     public void ioFileOut(Table table,List<Map<String,Object>> records){
         try {
-            BufferedWriter buffer = new BufferedWriter(new FileWriter("E:/"+table.getName()+".sql",true));
-            String info=this.getSQL(table,records);
-            buffer.write(info);
-            buffer.flush();
-            buffer.close();
+            FileOutputStream fos = new FileOutputStream(Params.sqlDir+"/data/"+table.getName()+".txt",true);
+            OutputStreamWriter osw = new OutputStreamWriter(fos, "GBK");
+            for (Map<String,Object> record:records){
+                StringBuffer info=new StringBuffer();
+                for (Column column:table.getColumns()){
+                    Object columnValue = record.get(column.getName());
+                    if(columnValue == null){
+                        info.append("0").append(",");
+                    }else {
+                        info.append(columnValue.toString()).append(",");
+                    }
+                }
+                info.deleteCharAt(info.length() - 1);
+                info.append("\n");
+                osw.write(info.toString());
+                osw.flush();
+            }
+            osw.close();
+            fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getColumns(Table table){
-        StringBuffer columns=new StringBuffer();
-        for (Column column:table.getColumns()){
-            columns.append(column.getName()).append(",");
-        }
-        columns.deleteCharAt(columns.length()-1);
-        return columns.toString();
-    }
-
-    private String getSQL(Table table,List<Map<String,Object>> records){
-        StringBuffer sql=new StringBuffer();
-        StringBuffer columns=new StringBuffer();
-        StringBuffer columnsValues=new StringBuffer();
-        sql.append("INSERT INTO ").append(table.getName()).append("(").append(this.getColumns(table)).append(") VALUES");
-        for (Map<String,Object> record:records){
-            columnsValues.append("(");
-            for (Column column:table.getColumns()){
-                Object columnValue = record.get(column.getName());
-                if(columnValue == null){
-                    columnsValues.append(columnValue).append(",");
-                }else {
-                    columnsValues.append("'").append(columnValue.toString().replace("'","''")).append("'").append(",");
-                }
-            }
-            columnsValues.deleteCharAt(columnsValues.length()-1);
-            columnsValues.append("),");
-        }
-        columnsValues.deleteCharAt(columnsValues.length()-1);
-        sql.append(columnsValues);
-        return sql.toString();
     }
 }
