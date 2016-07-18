@@ -45,8 +45,8 @@ public class StartMain {
             }
         }
         System.out.println("数据组装结束（输出到文件），耗费时间为："+(endTime-startTime)/1000+"秒");
-        System.out.println("数据开始入库");
-        new StartMain().runBat(applicationContext.getTableList());
+//        System.out.println("数据开始入库");
+//        new StartMain().runBat(applicationContext.getTableList());
 
     }
 
@@ -92,8 +92,7 @@ public class StartMain {
                     .append("set tableStruct=" + tableStruct).append("\n")
                     .append("%psql% -c \"copy %tableStruct% from E'%fileUrl%' USING delimiters ',';\"").append("\n")
                     .append("echo " + dataPath + " copy data end ").append("\n")
-                    .append("echo %time%").append("\n")
-                    .append("exit");
+                    .append("echo %time%").append("\n");
             buffer.write(sb.toString());
             buffer.flush();
             buffer.close();

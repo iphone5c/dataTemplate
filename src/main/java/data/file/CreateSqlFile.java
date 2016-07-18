@@ -2,11 +2,13 @@ package data.file;
 
 import data.core.Column;
 import data.core.Table;
+import data.utils.DataUtils;
 import data.utils.Params;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -61,7 +63,7 @@ public class CreateSqlFile {
                 //创建目录
                 dir.mkdirs();
             }
-            String sqlPath = Params.sqlDir + "/" + dateTime + "_" + table.getName()+".sql";
+            String sqlPath = Params.sqlDir + "/" + uuid + "_" + table.getName()+".sql";
             FileWriter fw=null;
             fw=new FileWriter(sqlPath);
             BufferedWriter buffer = new BufferedWriter(fw);
@@ -69,6 +71,7 @@ public class CreateSqlFile {
             buffer.flush();
             buffer.close();
             FileBatInsert.fileBatDeal(new File(sqlPath));
+            System.out.println(DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG)+"导入"+table.getName()+"数据条数："+list.size());
         }catch (Exception e){
             e.printStackTrace();
         }
