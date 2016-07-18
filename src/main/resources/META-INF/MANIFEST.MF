@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: lib\ant-launcher-1.8.2.jar lib\ant-1.8.2.jar lib\ibatis2-c
+ ommon-2.1.7.597.jar lib\postgresql-9.4.1208.jre7.jar
+Main-Class: dataTemplate
+
