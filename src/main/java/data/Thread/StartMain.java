@@ -28,7 +28,10 @@ public class StartMain {
         LinkedBlockingDeque<Map<String,List<Map<String,Object>>>> blockingDeque=new LinkedBlockingDeque<>();
         ExecutorService exe = Executors.newFixedThreadPool(50);
         for (Table table:applicationContext.getTableList()){
-            int num=table.getNum()/threadNum;
+            int num=1;
+            if (table.getNum()>threadNum){
+                num=table.getNum()/threadNum;
+            }
             for (int i = 1; i <= threadNum; i++) {
                 exe.execute(new StartThread(table,num,applicationContext));
                 exe.execute(new FileIOThread(table,num));

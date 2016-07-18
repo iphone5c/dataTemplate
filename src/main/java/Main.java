@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
         //初始化应用上下文
         ApplicationContext applicationContext=new ApplicationContext();
 //
