@@ -49,6 +49,12 @@ public class FileIOThread implements Runnable {
 
     public void ioFileOut(Table table,List<Map<String,Object>> records){
         try {
+            String fileDir = Params.sqlDir + "/data";
+            File dir = new File(fileDir);
+            if(!dir.exists()){
+                //创建目录
+                dir.mkdirs();
+            }
             FileOutputStream fos = new FileOutputStream(Params.sqlDir+"/data/"+table.getName()+".txt",true);
             OutputStreamWriter osw = new OutputStreamWriter(fos, "GBK");
             for (Map<String,Object> record:records){
