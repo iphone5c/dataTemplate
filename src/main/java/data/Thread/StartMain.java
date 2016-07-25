@@ -4,11 +4,13 @@ import data.batfile.FileBatInsert;
 import data.core.ApplicationContext;
 import data.core.Column;
 import data.core.Table;
+import data.utils.DataUtils;
 import data.utils.Params;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +24,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class StartMain {
 
     public static void start(int threadNum,ApplicationContext applicationContext){
-        System.out.println("数据组装开始，请稍后。。。");
+        System.out.println(DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG)+"--数据组装开始，请稍后。。。");
         long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis();
         LinkedBlockingDeque<Map<String,List<Map<String,Object>>>> blockingDeque=new LinkedBlockingDeque<>();
@@ -45,8 +47,8 @@ public class StartMain {
             }
         }
         System.out.println("数据组装结束（输出到文件），耗费时间为："+(endTime-startTime)/1000+"秒");
-//        System.out.println("数据开始入库");
-//        new StartMain().runBat(applicationContext.getTableList());
+        System.out.println(DataUtils.dateToString(new Date(),DataUtils.DATEFORMAT_DATETIME_EN_LONG)+"--数据开始入库");
+        new StartMain().runBat(applicationContext.getTableList());
 
     }
 
@@ -86,7 +88,7 @@ public class StartMain {
                     .append("set base=" + Params.DATA_SOURCE_DB).append("\n")
                     .append("set host=" + Params.DATA_SOURCE_IP).append("\n")
                     .append("set port=" + Params.DATA_SOURCE_PORT).append("\n")
-                    .append("set psql=psql -h %host% -p %port% -d %base% -U postgres").append("\n")
+                    .append("set psql=psql -h %host% -p %port% -d %base% -U ").append(Params.DATA_SOURCE_USER).append("\n")
                     .append("set PGPASSWORD=" + Params.DATA_SOURCE_PASSWORD).append("\n")
                     .append("set fileUrl=" + dataPath).append("\n")
                     .append("set tableStruct=" + tableStruct).append("\n")
